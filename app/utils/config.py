@@ -1,6 +1,7 @@
 import json
 import os
 import sys
+from app.utils.helpers import get_resource_path
 
 class Config:
     _instance = None
@@ -14,16 +15,8 @@ class Config:
 
     def _load_config(self):
         try:
-            # Look for config.json in the current directory or app root
-            base_path = os.path.dirname(os.path.abspath(__file__))
-            # Go up two levels to root (app/utils -> app -> root)
-            root_path = os.path.dirname(os.path.dirname(base_path))
-            config_path = os.path.join(root_path, 'config.json')
+            config_path = get_resource_path('config.json')
             
-            if not os.path.exists(config_path):
-                # Fallback to current directory
-                config_path = 'config.json'
-
             if os.path.exists(config_path):
                 with open(config_path, 'r') as f:
                     self._config_data = json.load(f)

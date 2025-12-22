@@ -1,7 +1,7 @@
 import sys
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, 
-    QLabel, QComboBox, QLineEdit, QPushButton, QTextEdit, QMessageBox
+    QLabel, QComboBox, QLineEdit, QPushButton, QTextEdit, QMessageBox, QSpinBox, QAbstractSpinBox
 )
 from PySide6.QtCore import Qt, QThread, Slot, QTimer
 from PySide6.QtGui import QIcon, QFont, QColor
@@ -10,6 +10,7 @@ from app.modbus.port_scanner import PortScanner
 from app.core.validation import Validator
 from app.ui.worker import FlashWorker
 from app.utils.logger import logger
+from app.utils.helpers import get_resource_path
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -102,18 +103,54 @@ class MainWindow(QMainWindow):
         
         # Slave ID
         self.layout.addWidget(QLabel("Slave ID"))
-        self.input_slave_id = QLineEdit()
-        self.input_slave_id.setPlaceholderText("Enter Slave ID (e.g., 1-247)")
-        self.input_slave_id.setStyleSheet("""
-            QLineEdit {
+
+        self.input_slave_id = QSpinBox()
+        self.input_slave_id.setButtonSymbols(QAbstractSpinBox.UpDownArrows)
+        self.input_slave_id.setRange(1, 247)
+        self.input_slave_id.setSingleStep(1)
+        self.input_slave_id.setValue(1)
+
+        arrow_up = get_resource_path("resources/arrow_up.svg").replace("\\", "/")
+        arrow_down = get_resource_path("resources/arrow_down.svg").replace("\\", "/")
+
+        self.input_slave_id.setStyleSheet(f"""
+            QSpinBox {{
                 background-color: #2d3748;
                 border: 1px solid #4a5568;
                 border-radius: 4px;
-                padding: 5px;
+                padding-right: 20px;
                 color: white;
-            }
+            }}
+
+            QSpinBox::up-button {{
+                subcontrol-origin: border;
+                subcontrol-position: top right;
+                width: 16px;
+                border-left: 1px solid #4a5568;
+            }}
+
+            QSpinBox::down-button {{
+                subcontrol-origin: border;
+                subcontrol-position: bottom right;
+                width: 16px;
+                border-left: 1px solid #4a5568;
+            }}
+
+            QSpinBox::up-arrow {{
+                image: url({arrow_up});
+                width: 10px;
+                height: 10px;
+            }}
+
+            QSpinBox::down-arrow {{
+                image: url({arrow_down});
+                width: 10px;
+                height: 10px;
+            }}
         """)
-        self.input_slave_id.textChanged.connect(self.validate_form)
+
+        self.input_slave_id.valueChanged.connect(self.validate_form)
+
         self.layout.addWidget(self.input_slave_id)
         
         # Flash Button
