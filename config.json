@@ -1,0 +1,19 @@
+{
+    "modbus": {
+        "baudrate": 9600,
+        "bytesize": 8,
+        "parity": "N",
+        "stopbits": 1,
+        "timeout": 1,
+        "retries": 3
+    },
+    "register_map": {
+        "slave_id_register_address": 16,
+        "update_coil_address": 1
+    },
+    "app": {
+        "window_title": "Device Flasher",
+        "window_width": 500,
+        "window_height": 600
+    }
+}
