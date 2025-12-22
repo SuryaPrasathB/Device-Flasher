@@ -18,5 +18,5 @@ class PortScanner:
             }
             available_ports.append(port_info)
         
-        logger.debug(f"Found ports: {available_ports}")
+        #logger.debug(f"Found ports: {available_ports}")
         return available_ports

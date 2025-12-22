@@ -3,7 +3,7 @@ from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, 
     QLabel, QComboBox, QLineEdit, QPushButton, QTextEdit, QMessageBox
 )
-from PySide6.QtCore import Qt, QThread, Slot
+from PySide6.QtCore import Qt, QThread, Slot, QTimer
 from PySide6.QtGui import QIcon, QFont, QColor
 
 from app.modbus.port_scanner import PortScanner
@@ -18,6 +18,9 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("Device Flasher")
         self.resize(500, 600)
         
+        # Apply Dark Theme
+        self.setStyleSheet("background-color: #1a202c; color: white;")
+
         # Main Layout
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
@@ -38,6 +41,11 @@ class MainWindow(QMainWindow):
         self.thread = None
         self.worker = None
 
+        # Port Auto-Refresh Timer
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.check_ports)
+        self.timer.start(2000)  # Check every 2 seconds
+
         # Load Ports
         self.refresh_ports()
 
@@ -45,11 +53,11 @@ class MainWindow(QMainWindow):
         header_layout = QVBoxLayout()
         title = QLabel("Device Flasher")
         title.setAlignment(Qt.AlignCenter)
-        title.setStyleSheet("font-size: 24px; font-weight: bold; color: #2d3748;")
+        title.setStyleSheet("font-size: 24px; font-weight: bold; color: white;")
         
         subtitle = QLabel("Flash Slave ID to Embedded Controller")
         subtitle.setAlignment(Qt.AlignCenter)
-        subtitle.setStyleSheet("font-size: 14px; color: #718096;")
+        subtitle.setStyleSheet("font-size: 14px; color: #a0aec0;")
         
         header_layout.addWidget(title)
         header_layout.addWidget(subtitle)
@@ -60,6 +68,23 @@ class MainWindow(QMainWindow):
         self.layout.addWidget(QLabel("COM Port"))
         self.combo_ports = QComboBox()
         self.combo_ports.addItem("Select COM Port", None)
+        self.combo_ports.setStyleSheet("""
+            QComboBox {
+                background-color: #2d3748;
+                border: 1px solid #4a5568;
+                border-radius: 4px;
+                padding: 5px;
+                color: white;
+            }
+            QComboBox::drop-down {
+                border: 0px;
+            }
+            QComboBox QAbstractItemView {
+                background-color: #2d3748;
+                color: white;
+                selection-background-color: #4a5568;
+            }
+        """)
         self.combo_ports.currentIndexChanged.connect(self.on_port_changed)
         self.layout.addWidget(self.combo_ports)
         
@@ -67,7 +92,7 @@ class MainWindow(QMainWindow):
         self.status_layout = QHBoxLayout()
         self.status_dot = QLabel()
         self.status_dot.setFixedSize(12, 12)
-        self.status_dot.setStyleSheet("background-color: #cbd5e0; border-radius: 6px;")
+        self.status_dot.setStyleSheet("background-color: #4a5568; border-radius: 6px;")
         self.status_text = QLabel("Not connected")
         self.status_text.setStyleSheet("color: #718096; font-size: 12px;")
         self.status_layout.addWidget(self.status_dot)
@@ -79,25 +104,36 @@ class MainWindow(QMainWindow):
         self.layout.addWidget(QLabel("Slave ID"))
         self.input_slave_id = QLineEdit()
         self.input_slave_id.setPlaceholderText("Enter Slave ID (e.g., 1-247)")
+        self.input_slave_id.setStyleSheet("""
+            QLineEdit {
+                background-color: #2d3748;
+                border: 1px solid #4a5568;
+                border-radius: 4px;
+                padding: 5px;
+                color: white;
+            }
+        """)
         self.input_slave_id.textChanged.connect(self.validate_form)
         self.layout.addWidget(self.input_slave_id)
         
         # Flash Button
-        self.btn_flash = QPushButton("Flash Device")
+        self.btn_flash = QPushButton("Set Slave ID")
         self.btn_flash.setFixedHeight(45)
         self.btn_flash.setStyleSheet("""
             QPushButton {
-                background-color: #667eea;
+                background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #667eea, stop:1 #764ba2);
                 color: white;
                 border-radius: 8px;
                 font-size: 16px;
                 font-weight: bold;
+                border: none;
             }
             QPushButton:hover {
-                background-color: #5a67d8;
+                background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #5a67d8, stop:1 #6b46c1);
             }
             QPushButton:disabled {
-                background-color: #cbd5e0;
+                background-color: #4a5568;
+                color: #a0aec0;
             }
         """)
         self.btn_flash.clicked.connect(self.start_flash)
@@ -106,13 +142,13 @@ class MainWindow(QMainWindow):
         
         # Note
         note = QLabel("Note: Ensure device is connected. Valid ID: 1-247")
-        note.setStyleSheet("background-color: #edf2f7; color: #4a5568; padding: 10px; border-radius: 4px; font-size: 12px;")
+        note.setStyleSheet("background-color: #2d3748; color: #cbd5e0; padding: 10px; border-radius: 4px; font-size: 12px; border-left: 4px solid #4299e1;")
         self.layout.addWidget(note)
 
     def _init_log_area(self):
         self.log_area = QTextEdit()
         self.log_area.setReadOnly(True)
-        self.log_area.setStyleSheet("background-color: #f7fafc; border-radius: 8px; font-family: Courier New; font-size: 12px;")
+        self.log_area.setStyleSheet("background-color: #0f131a; color: white; border: 1px solid #2d3748; border-radius: 8px; font-family: Courier New; font-size: 12px;")
         self.layout.addWidget(self.log_area)
         self.log("System ready...")
 
@@ -123,15 +159,49 @@ class MainWindow(QMainWindow):
         for p in ports:
             self.combo_ports.addItem(f"{p['port']} - {p['description']}", p['port'])
 
+    def check_ports(self):
+        new_ports = PortScanner.get_available_ports()
+        current_port_data = self.combo_ports.currentData()
+        
+        # Get current items in combo
+        current_items = []
+        for i in range(1, self.combo_ports.count()): # Skip index 0 "Select COM Port"
+            current_items.append(self.combo_ports.itemData(i))
+            
+        new_port_ids = [p['port'] for p in new_ports]
+        
+        # Check if lists match
+        if set(current_items) != set(new_port_ids):
+            self.combo_ports.blockSignals(True)
+            self.combo_ports.clear()
+            self.combo_ports.addItem("Select COM Port", None)
+            for p in new_ports:
+                self.combo_ports.addItem(f"{p['port']} - {p['description']}", p['port'])
+            
+            # Restore selection if possible
+            index = self.combo_ports.findData(current_port_data)
+            if index >= 0:
+                self.combo_ports.setCurrentIndex(index)
+            else:
+                self.combo_ports.setCurrentIndex(0)
+                
+            self.combo_ports.blockSignals(False)
+            
+            # If the selected port is gone, we need to handle that manually since we blocked signals
+            if index == -1 and current_port_data is not None:
+                self.on_port_changed()
+
     def on_port_changed(self):
         port = self.combo_ports.currentData()
         if port:
             self.status_dot.setStyleSheet("background-color: #48bb78; border-radius: 6px;")
-            self.status_text.setText(f"Selected {port}")
-            self.log(f"Selected Port: {port}")
+            self.status_text.setText(f"Connected to {port}")
+            self.status_text.setStyleSheet("color: #48bb78; font-size: 12px;")
+            self.log(f"Connected to {port}", "SUCCESS")
         else:
-            self.status_dot.setStyleSheet("background-color: #cbd5e0; border-radius: 6px;")
+            self.status_dot.setStyleSheet("background-color: #4a5568; border-radius: 6px;")
             self.status_text.setText("Not connected")
+            self.status_text.setStyleSheet("color: #718096; font-size: 12px;")
         self.validate_form()
 
     def validate_form(self):
@@ -144,9 +214,9 @@ class MainWindow(QMainWindow):
         self.btn_flash.setEnabled(valid_port and valid_sid)
 
     def log(self, message, level="INFO"):
-        color = "#2d3748"
-        if "success" in level.lower(): color = "#38a169"
-        if "error" in level.lower() or "fail" in level.lower(): color = "#e53e3e"
+        color = "#e2e8f0"
+        if "success" in level.lower(): color = "#48bb78"
+        if "error" in level.lower() or "fail" in level.lower(): color = "#f56565"
         
         self.log_area.append(f'<span style="color:{color}">[{level}] {message}</span>')
         # Also log to file/console via logger
@@ -194,7 +264,7 @@ class MainWindow(QMainWindow):
         # For now, we leave it, user can change inputs to reset or we just re-enable:
         self.btn_flash.setEnabled(True)
         if not success:
-             self.btn_flash.setText("Retry Flash")
+             self.btn_flash.setText("Retry")
         else:
-             self.btn_flash.setText("Flash Device")
+             self.btn_flash.setText("Set Slave ID")
         self.validate_form()

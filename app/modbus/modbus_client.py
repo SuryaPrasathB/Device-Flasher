@@ -64,8 +64,8 @@ class ModbusClientWrapper:
 
         logger.debug(f"Writing Register: ID={slave_id}, Addr={address}, Val={value}")
         try:
-            # pymodbus write_register(address, value, slave=slave_id)
-            response = self.client.write_register(address, value, slave=slave_id)
+            # pymodbus write_register(address, value, device_id=slave_id)
+            response = self.client.write_register(address, value, device_id=slave_id)
             
             if response.isError():
                 logger.error(f"Modbus Error (Write Register): {response}")
@@ -88,8 +88,8 @@ class ModbusClientWrapper:
 
         logger.debug(f"Writing Coil: ID={slave_id}, Addr={address}, Val={value}")
         try:
-            # pymodbus write_coil(address, value, slave=slave_id)
-            response = self.client.write_coil(address, value, slave=slave_id)
+            # pymodbus write_coil(address, value, device_id=slave_id)
+            response = self.client.write_coil(address, value, device_id=slave_id)
             
             if response.isError():
                 logger.error(f"Modbus Error (Write Coil): {response}")
@@ -112,7 +112,7 @@ class ModbusClientWrapper:
              
         logger.debug(f"Reading Registers: ID={slave_id}, Addr={address}, Count={count}")
         try:
-            response = self.client.read_holding_registers(address, count, slave=slave_id)
+            response = self.client.read_holding_registers(address, count=count, device_id=slave_id)
             if response.isError():
                 logger.error(f"Modbus Error (Read Register): {response}")
                 return None, str(response)

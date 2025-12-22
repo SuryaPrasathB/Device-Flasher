@@ -1,6 +1,6 @@
 {
     "modbus": {
-        "baudrate": 9600,
+        "baudrate": 115200,
         "bytesize": 8,
         "parity": "N",
         "stopbits": 1,
