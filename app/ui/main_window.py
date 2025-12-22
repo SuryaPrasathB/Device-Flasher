@@ -141,7 +141,8 @@ class MainWindow(QMainWindow):
         self.layout.addWidget(self.btn_flash)
         
         # Note
-        note = QLabel("Note: Ensure device is connected. Valid ID: 1-247")
+        note = QLabel("<b>Note:</b> Ensure the device is properly connected before flashing. "
+                      "Valid Slave ID range: 1–247")
         note.setStyleSheet("background-color: #2d3748; color: #cbd5e0; padding: 10px; border-radius: 4px; font-size: 12px; border-left: 4px solid #4299e1;")
         self.layout.addWidget(note)
 
