@@ -27,7 +27,9 @@ class Config:
             print(f"Error loading config: {e}")
             self._config_data = {}
 
-    def get(self, section, key, default=None):
+    def get(self, section, key=None, default=None):
+        if key is None:
+             return self._config_data.get(section, default)
         return self._config_data.get(section, {}).get(key, default)
 
     @property
@@ -37,6 +39,28 @@ class Config:
     @property
     def register_map(self):
         return self._config_data.get('register_map', {})
+
+    def save(self):
+        try:
+            config_path = get_resource_path('config.json')
+            # If get_resource_path returns a path inside a purely temporary dir (PyInstaller),
+            # saving might not persist for next run if we don't save to a local user path.
+            # However, for this task, we will try to save back to the original location if running from source,
+            # or the local directory.
+
+            # Simple approach: If running as script, save to file.
+            # If compiled, this might need to save to AppData.
+            # For now, we assume the file is writable.
+
+            # We need to handle the case where get_resource_path points to the bundled resource.
+            # When running from source, it points to the source file.
+
+            with open(config_path, 'w') as f:
+                json.dump(self._config_data, f, indent=4)
+            return True
+        except Exception as e:
+            print(f"Error saving config: {e}")
+            return False
 
 # Global instance
 config = Config()

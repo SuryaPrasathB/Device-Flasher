@@ -102,6 +102,39 @@ class ModbusClientWrapper:
         except Exception as e:
             logger.error(f"General Exception (Write Coil): {e}")
             return False, str(e)
+
+    def write_int32(self, slave_id, address, value):
+        """
+        Writes a 32-bit integer to two 16-bit holding registers.
+        High Word is written to 'address', Low Word to 'address + 1'.
+        """
+        if not self.connected or not self.client:
+            raise ConnectionError("Not connected to Modbus device.")
+
+        # Split 32-bit int into two 16-bit words (Big Endian logic for words)
+        # value is assumed to be an integer
+        value = int(value)
+        high_word = (value >> 16) & 0xFFFF
+        low_word = value & 0xFFFF
+
+        values = [high_word, low_word]
+
+        logger.debug(f"Writing 32-bit Int: ID={slave_id}, Addr={address}, Val={value} -> {values}")
+        try:
+            # pymodbus write_registers(address, values, device_id=slave_id)
+            response = self.client.write_registers(address, values, device_id=slave_id)
+
+            if response.isError():
+                logger.error(f"Modbus Error (Write Int32): {response}")
+                return False, str(response)
+
+            return True, None
+        except ModbusException as e:
+            logger.error(f"Modbus Exception (Write Int32): {e}")
+            return False, str(e)
+        except Exception as e:
+            logger.error(f"General Exception (Write Int32): {e}")
+            return False, str(e)
             
     def read_holding_registers(self, slave_id, address, count=1):
         """
