@@ -75,6 +75,6 @@ To package this application into an EXE/Installer:
 1.  Use `PyInstaller`:
     ```bash
     pip install pyinstaller
-    pyinstaller --noconsole --onefile --name "DeviceFlasher" main.py
+    pyinstaller --noconsole --onefile --name "DeviceFlasher" --add-data "config.json;." --add-data "resources;resources" main.py
     ```
 2.  Ensure `config.json` is distributed with the executable or embedded (requires code changes to load resource).
