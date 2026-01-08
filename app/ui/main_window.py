@@ -14,7 +14,7 @@ from app.utils.helpers import get_resource_path
 
 # Tabs
 from app.ui.tabs.slave_id_tab import SlaveIDTab
-from app.ui.tabs.loe_tab import LOETab
+from app.ui.tabs.testing_tab import TestingTab
 from app.ui.tabs.settings_tab import SettingsTab
 from app.ui.tabs.placeholder_tab import PlaceholderTab
 
@@ -44,18 +44,10 @@ class MainWindow(QMainWindow):
         # 1. Top Bar: Port Selection & Status (Global)
         self._init_top_bar()
         
-        # 2. Log Area (Global, Middle-Bottom)
-        # We put Log Area here or bottom?
-        # Requirements: "Bottom Tab Bar". Log area usually good to see always.
-        # Let's put Tabs in the Middle, Log at the Bottom above TabBar?
-        # Standard QTabWidget includes content.
-        # Let's put Log Area BELOW tabs, ABOVE status bar?
-        # Let's stick to: Top Bar -> Tabs -> Log Area (small)
-        
-        # 3. Tabs
+        # 2. Tabs
         self._init_tabs()
         
-        # 4. Log Area
+        # 3. Log Area
         self._init_log_area()
 
         # Port Auto-Refresh Timer
@@ -138,10 +130,10 @@ class MainWindow(QMainWindow):
         self.tab_slave_id.request_flash.connect(self.start_flash_legacy)
         self.tabs.addTab(self.tab_slave_id, "Set ID")
 
-        # Tab 2: LOE
-        self.tab_loe = LOETab()
-        self.tab_loe.log_message.connect(self.log)
-        self.tabs.addTab(self.tab_loe, "LOE")
+        # Tab 2: Testing (Refactored LOE)
+        self.tab_testing = TestingTab()
+        self.tab_testing.log_message.connect(self.log)
+        self.tabs.addTab(self.tab_testing, "Testing")
 
         # Tab 3: Settings
         self.tab_settings = SettingsTab()
@@ -203,7 +195,8 @@ class MainWindow(QMainWindow):
         port = self.combo_ports.currentData()
 
         # Notify Tabs
-        self.tab_loe.set_current_port(port)
+        if hasattr(self, 'tab_testing'):
+            self.tab_testing.set_current_port(port)
 
         if port:
             self.status_dot.setStyleSheet("background-color: #48bb78; border-radius: 6px;")

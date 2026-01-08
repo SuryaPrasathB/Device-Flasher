@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QFormLayout, QGroupBox, QLineEdit,
-    QPushButton, QMessageBox, QSpinBox, QComboBox
+    QWidget, QVBoxLayout, QFormLayout, QGroupBox,
+    QPushButton, QMessageBox, QSpinBox, QComboBox, QScrollArea
 )
 from PySide6.QtCore import Qt
 from app.utils.config import config
@@ -14,10 +14,18 @@ class SettingsTab(QWidget):
         self._init_ui()
 
     def _init_ui(self):
-        layout = QVBoxLayout(self)
-        layout.setContentsMargins(20, 20, 20, 20)
+        main_layout = QVBoxLayout(self)
+        main_layout.setContentsMargins(10, 10, 10, 10)
 
-        # Modbus Settings
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+        scroll_area.setStyleSheet("background-color: transparent; border: none;")
+
+        content_widget = QWidget()
+        layout = QVBoxLayout(content_widget)
+        layout.setSpacing(15)
+
+        # --- Modbus Settings ---
         modbus_group = QGroupBox("Modbus Communication")
         modbus_group.setStyleSheet("QGroupBox { border: 1px solid #4a5568; border-radius: 6px; margin-top: 6px; font-weight: bold; } QGroupBox::title { subcontrol-origin: margin; left: 10px; padding: 0 3px; }")
 
@@ -44,33 +52,83 @@ class SettingsTab(QWidget):
 
         layout.addWidget(modbus_group)
 
-        # Register Map Settings
-        reg_group = QGroupBox("Register Map (Addresses)")
-        reg_group.setStyleSheet("QGroupBox { border: 1px solid #4a5568; border-radius: 6px; margin-top: 6px; font-weight: bold; } QGroupBox::title { subcontrol-origin: margin; left: 10px; padding: 0 3px; }")
-
-        self.reg_layout = QFormLayout(reg_group)
-        self.reg_layout.setLabelAlignment(Qt.AlignRight)
-
-        # Helper to create inputs
+        # --- Register Map Settings ---
         self.inputs = {}
 
-        def add_reg_input(label, key):
-            inp = QSpinBox()
-            inp.setRange(0, 65535)
-            inp.setStyleSheet("background-color: #2d3748; color: white; border: 1px solid #4a5568; padding: 4px; border-radius: 4px;")
-            self.reg_layout.addRow(label, inp)
-            self.inputs[key] = inp
+        # Group 1: Common Registers
+        common_group = QGroupBox("Common Registers")
+        common_group.setStyleSheet("QGroupBox { border: 1px solid #4a5568; border-radius: 6px; margin-top: 6px; font-weight: bold; } QGroupBox::title { subcontrol-origin: margin; left: 10px; padding: 0 3px; }")
+        self.common_layout = QFormLayout(common_group)
+        self.common_layout.setLabelAlignment(Qt.AlignRight)
 
-        add_reg_input("Slave ID (Legacy):", "slave_id_register_address")
-        add_reg_input("Update Coil (Legacy):", "update_coil_address")
-        add_reg_input("Meter Const (Reg):", "meter_constant_address")
-        add_reg_input("Ref Const (Reg):", "reference_constant_address")
-        add_reg_input("Test Pulses (Reg):", "test_pulses_address")
-        add_reg_input("Start Coil:", "start_coil_address")
+        self._add_reg_input(self.common_layout, "Slave ID (Reg):", "slave_id_register_address")
+        self._add_reg_input(self.common_layout, "Test Type:", "test_type_address")
+        self._add_reg_input(self.common_layout, "Start Trigger Coil:", "start_coil_address")
+        self._add_reg_input(self.common_layout, "Result Code:", "result_code_address")
 
-        layout.addWidget(reg_group)
+        layout.addWidget(common_group)
+
+        # Group 2: LOE (Limits of Error)
+        loe_group = QGroupBox("Limits of Error (LOE)")
+        loe_group.setStyleSheet("QGroupBox { border: 1px solid #4a5568; border-radius: 6px; margin-top: 6px; font-weight: bold; } QGroupBox::title { subcontrol-origin: margin; left: 10px; padding: 0 3px; }")
+        self.loe_layout = QFormLayout(loe_group)
+        self.loe_layout.setLabelAlignment(Qt.AlignRight)
+
+        self._add_reg_input(self.loe_layout, "Meter Constant:", "dut_meter_constant_address")
+        self._add_reg_input(self.loe_layout, "Ref Constant (HB):", "ref_meter_constant_address")
+        self._add_reg_input(self.loe_layout, "Target Pulses:", "dut_meter_target_pulses_address")
+        self._add_reg_input(self.loe_layout, "Pulse Skip:", "num_of_pulse_skip_address")
+        self._add_reg_input(self.loe_layout, "Error Read (HB):", "error_address")
+
+        layout.addWidget(loe_group)
+
+        # Group 3: Starting Current & No Load
+        sc_nl_group = QGroupBox("Starting Current & No Load")
+        sc_nl_group.setStyleSheet("QGroupBox { border: 1px solid #4a5568; border-radius: 6px; margin-top: 6px; font-weight: bold; } QGroupBox::title { subcontrol-origin: margin; left: 10px; padding: 0 3px; }")
+        self.sc_nl_layout = QFormLayout(sc_nl_group)
+        self.sc_nl_layout.setLabelAlignment(Qt.AlignRight)
+
+        self._add_reg_input(self.sc_nl_layout, "Time Duration:", "time_duration_address")
+        self._add_reg_input(self.sc_nl_layout, "Min Pulse Expected:", "min_pulse_expected_address")
+        self._add_reg_input(self.sc_nl_layout, "Max Pulse Accepted:", "max_pulse_accepted_address")
+        self._add_reg_input(self.sc_nl_layout, "DUT Pulse Count:", "dut_meter_pulse_count_address")
+
+        layout.addWidget(sc_nl_group)
+
+        # Group 4: Dial Test
+        dial_group = QGroupBox("Dial Test")
+        dial_group.setStyleSheet("QGroupBox { border: 1px solid #4a5568; border-radius: 6px; margin-top: 6px; font-weight: bold; } QGroupBox::title { subcontrol-origin: margin; left: 10px; padding: 0 3px; }")
+        self.dial_layout = QFormLayout(dial_group)
+        self.dial_layout.setLabelAlignment(Qt.AlignRight)
+
+        # Note: Ref Const and Pulse Skip are already in LOE, but also used here.
+        # Since they are the same address key, we don't duplicate the input widget unless we want dual controls (bad).
+        # We just assume the user sets them in LOE section or Common.
+        # But wait, User asked to categorize. If I add it again, I need unique dict keys or synced widgets.
+        # I'll stick to listing unique registers per group where they primarily belong, or add the new ones specifically.
+
+        self._add_reg_input(self.dial_layout, "Target Energy:", "target_energy_address")
+
+        layout.addWidget(dial_group)
+
+        # Group 5: Legacy/Other
+        other_group = QGroupBox("Other")
+        other_group.setStyleSheet("QGroupBox { border: 1px solid #4a5568; border-radius: 6px; margin-top: 6px; font-weight: bold; } QGroupBox::title { subcontrol-origin: margin; left: 10px; padding: 0 3px; }")
+        self.other_layout = QFormLayout(other_group)
+        self.other_layout.setLabelAlignment(Qt.AlignRight)
+
+        self._add_reg_input(self.other_layout, "Comm Mode:", "comm_mode_address")
+        self._add_reg_input(self.other_layout, "Num Set Reading:", "num_of_set_of_reading_address")
+        self._add_reg_input(self.other_layout, "Nth Reading:", "nth_reading_address")
+        self._add_reg_input(self.other_layout, "Slave ID Set Coil:", "slave_id_set_coil")
+        self._add_reg_input(self.other_layout, "SW Reset Coil:", "software_reset_coil")
+
+        layout.addWidget(other_group)
 
         layout.addStretch()
+
+        scroll_area.setWidget(content_widget)
+        main_layout.addWidget(scroll_area)
 
         # Save Button
         self.btn_save = QPushButton("Save Settings")
@@ -85,9 +143,16 @@ class SettingsTab(QWidget):
             QPushButton:hover { background-color: #2c5282; }
         """)
         self.btn_save.clicked.connect(self.save_settings)
-        layout.addWidget(self.btn_save)
+        main_layout.addWidget(self.btn_save)
 
         self.load_values()
+
+    def _add_reg_input(self, layout, label, key):
+        inp = QSpinBox()
+        inp.setRange(0, 65535)
+        inp.setStyleSheet("background-color: #2d3748; color: white; border: 1px solid #4a5568; padding: 4px; border-radius: 4px;")
+        layout.addRow(label, inp)
+        self.inputs[key] = inp
 
     def _style_combo(self, combo):
         combo.setStyleSheet("""
@@ -134,6 +199,6 @@ class SettingsTab(QWidget):
 
         # Persist
         if config.save():
-            QMessageBox.information(self, "Settings", "Settings saved successfully. Restart may be required for some changes.")
+            QMessageBox.information(self, "Settings", "Settings saved successfully.")
         else:
             QMessageBox.critical(self, "Error", "Failed to save settings to file.")
