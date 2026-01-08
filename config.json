@@ -8,8 +8,8 @@
         "retries": 3
     },
     "register_map": {
-        "slave_id_register_address": 16,
-        "update_coil_address": 5,
+        "slave_id_register_address": 10,
+        "update_coil_address": 3,
         "reference_constant_address": 6,
         "meter_constant_address": 13,
         "test_pulses_address": 14,

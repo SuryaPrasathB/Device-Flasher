@@ -1,0 +1,8 @@
+app/modbus/__pycache__/
+
+# Common Python and Build artifacts
+__pycache__/
+build/
+dist/
+*.spec
+venv/
