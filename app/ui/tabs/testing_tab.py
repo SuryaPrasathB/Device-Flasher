@@ -23,6 +23,7 @@ class TestingTab(QWidget):
         self.modbus_client = None
         self.worker_thread = None
         self.worker = None
+        self.is_running = False
         self._init_ui()
 
     def _init_ui(self):
@@ -100,6 +101,12 @@ class TestingTab(QWidget):
         self.btn_start.setStyleSheet(self._get_btn_style("#38a169", "#2f855a"))
         self.btn_start.clicked.connect(self.on_start_clicked)
         action_layout.addWidget(self.btn_start)
+
+        self.btn_stop = QPushButton("STOP TEST")
+        self.btn_stop.setFixedHeight(40)
+        self.btn_stop.setStyleSheet(self._get_btn_style("#e53e3e", "#c53030")) # Red
+        self.btn_stop.clicked.connect(self.on_stop_clicked)
+        action_layout.addWidget(self.btn_stop)
 
         layout.addLayout(action_layout)
 
@@ -180,14 +187,14 @@ class TestingTab(QWidget):
         f_dial = QFormLayout(w_dial)
         f_dial.setLabelAlignment(Qt.AlignRight)
 
+        self.inp_dial_meter_const = self._create_spinbox(65535)
+        f_dial.addRow("DUT Meter Constant:", self.inp_dial_meter_const)
+
         self.inp_dial_ref_const = self._create_spinbox(2147483647)
         f_dial.addRow("Ref Meter Constant:", self.inp_dial_ref_const)
 
         self.inp_dial_target = self._create_spinbox(65535)
         f_dial.addRow("Target Energy:", self.inp_dial_target)
-
-        self.inp_dial_skip = self._create_spinbox(65535)
-        f_dial.addRow("Num Pulse Skip:", self.inp_dial_skip)
 
         self.params_widgets[444] = w_dial
         self.param_stack.addWidget(w_dial)
@@ -329,8 +336,12 @@ class TestingTab(QWidget):
         self.current_port = port
         state = port is not None
         self.btn_update.setEnabled(state)
-        self.btn_start.setEnabled(state)
+        # self.btn_start.setEnabled(state) # Manage start/stop separately
         self.btn_read_result.setEnabled(state)
+        
+        self.is_running = False # Reset state on port change
+        self.btn_start.setEnabled(state)
+        self.btn_stop.setEnabled(state)
 
     def on_update_clicked(self):
         if not hasattr(self, 'current_port') or not self.current_port:
@@ -358,9 +369,9 @@ class TestingTab(QWidget):
             data["max_pulse_accepted"] = self.inp_nl_max_pulse.value()
 
         elif test_type == 444: # Dial
+            data["dut_meter_constant"] = self.inp_dial_meter_const.value()
             data["ref_meter_constant"] = self.inp_dial_ref_const.value()
             data["target_energy"] = self.inp_dial_target.value()
-            data["num_of_pulse_skip"] = self.inp_dial_skip.value()
 
         self.run_worker("update", self.current_port, target_id, data)
 
@@ -371,6 +382,13 @@ class TestingTab(QWidget):
 
         target_id = self.get_target_id()
         self.run_worker("start", self.current_port, target_id)
+
+    def on_stop_clicked(self):
+        if not hasattr(self, 'current_port') or not self.current_port:
+            return # Should be disabled anyway
+
+        target_id = self.get_target_id()
+        self.run_worker("stop", self.current_port, target_id)
 
     def on_read_result_clicked(self):
         if not hasattr(self, 'current_port') or not self.current_port:
@@ -386,6 +404,7 @@ class TestingTab(QWidget):
     def run_worker(self, mode, port, slave_id, data=None):
         self.btn_update.setEnabled(False)
         self.btn_start.setEnabled(False)
+        self.btn_stop.setEnabled(False)
         self.btn_read_result.setEnabled(False)
 
         self.thread = QThread()
@@ -442,7 +461,18 @@ class TestingTab(QWidget):
         self.log_message.emit(msg, level)
         self.btn_update.setEnabled(True)
         self.btn_start.setEnabled(True)
+        self.btn_stop.setEnabled(True)
         self.btn_read_result.setEnabled(True)
+
+        if success and self.worker:
+            mode = self.worker.mode
+            if mode == "start":
+                self.is_running = True
+            elif mode == "stop":
+                self.is_running = False
+        else:
+             if self.worker and self.worker.mode == "start":
+                 self.is_running = False
 
 
 class TestWorker(QObject):
@@ -469,6 +499,8 @@ class TestWorker(QObject):
                 self._run_update()
             elif self.mode == "start":
                 self._run_start()
+            elif self.mode == "stop":
+                self._run_stop()
             elif self.mode == "read":
                 self._run_read()
 
@@ -482,15 +514,9 @@ class TestWorker(QObject):
 
     def _write_generic(self, func, addr, val, name):
         is_broadcast = (self.slave_id == 0)
-        retries = 3 if is_broadcast else 1
 
-        success = False
-        for i in range(retries):
-            s, msg = func(self.slave_id, addr, val)
-            if s:
-                success = True
-                if not is_broadcast: break
-            time.sleep(0.05)
+        s, msg = func(self.slave_id, addr, val)
+        success = s
 
         if not success and not is_broadcast:
              raise Exception(f"Failed to write {name}")
@@ -520,9 +546,9 @@ class TestWorker(QObject):
             self._write_generic(self.client.write_register, self._get_addr("max_pulse_accepted_address"), d["max_pulse_accepted"], "Max Pulse")
 
         elif tt == 444: # Dial
+            self._write_generic(self.client.write_register, self._get_addr("dut_meter_constant_address"), d["dut_meter_constant"], "Meter Constant")
             self._write_generic(self.client.write_int32, self._get_addr("ref_meter_constant_address"), d["ref_meter_constant"], "Ref Constant")
             self._write_generic(self.client.write_register, self._get_addr("target_energy_address"), d["target_energy"], "Target Energy")
-            self._write_generic(self.client.write_register, self._get_addr("num_of_pulse_skip_address"), d["num_of_pulse_skip"], "Pulse Skip")
 
         self.finished.emit(True, "Parameters Updated")
 
@@ -530,6 +556,11 @@ class TestWorker(QObject):
         self.progress.emit("Sending Start Command...", 50)
         self._write_generic(self.client.write_coil, self._get_addr("start_coil_address"), True, "Start Coil")
         self.finished.emit(True, "Test Started")
+
+    def _run_stop(self):
+        self.progress.emit("Sending Stop Command...", 50)
+        self._write_generic(self.client.write_coil, self._get_addr("stop_coil_address"), True, "Stop Coil")
+        self.finished.emit(True, "Test Stopped")
 
     def _run_read(self):
         tt = self.data["test_type"]

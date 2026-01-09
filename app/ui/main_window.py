@@ -256,5 +256,5 @@ class MainWindow(QMainWindow):
             self.log(message, "ERROR")
             self.tab_slave_id.set_button_state("Retry", True)
         
-        # Reset button text after 2s?
+        # Reset button text after 3s
         QTimer.singleShot(3000, lambda: self.tab_slave_id.set_button_state("Set Slave ID", True))

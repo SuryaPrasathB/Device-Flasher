@@ -1,0 +1,7 @@
+(self, address: 'int', value: 'int', *, device_id: 'int' = 1, no_response_expected: 'bool' = False) -> 'T'
+Params:
+self: POSITIONAL_OR_KEYWORD
+address: POSITIONAL_OR_KEYWORD
+value: POSITIONAL_OR_KEYWORD
+device_id: KEYWORD_ONLY
+no_response_expected: KEYWORD_ONLY

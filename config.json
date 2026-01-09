@@ -27,7 +27,8 @@
         "start_coil_address": 1,
         "comm_mode_1_enable_coil": 2,
         "slave_id_set_coil": 3,
-        "software_reset_coil": 4
+        "software_reset_coil": 4,
+        "stop_coil_address": 6
     },
     "app": {
         "window_title": "Device Tester",
