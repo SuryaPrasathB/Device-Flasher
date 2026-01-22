@@ -29,7 +29,8 @@ def main():
         logger.error(f"Failed to import UI components: {e}")
         sys.exit(1)
     except Exception as e:
-        logger.error(f"Fatal error: {e}")
+        import traceback
+        logger.error(f"Fatal error: {e}\n{traceback.format_exc()}")
         sys.exit(1)
 
 if __name__ == "__main__":

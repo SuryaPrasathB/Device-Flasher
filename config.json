@@ -8,12 +8,31 @@
         "retries": 3
     },
     "register_map": {
-        "slave_id_register_address": 16,
-        "update_coil_address": 1
+        "ref_meter_constant_address": 3,
+        "error_address": 9,
+        "test_type_address": 13,
+        "dut_meter_constant_address": 14,
+        "dut_meter_target_pulses_address": 15,
+        "num_of_pulse_skip_address": 16,
+        "num_of_set_of_reading_address": 9,
+        "slave_id_register_address": 18,
+        "time_duration_address": 11,
+        "comm_mode_address": 12,
+        "nth_reading_address": 13,
+        "min_pulse_expected_address": 14,
+        "max_pulse_accepted_address": 15,
+        "result_code_address": 16,
+        "dut_meter_pulse_count_address": 17,
+        "target_energy_address": 18,
+        "start_coil_address": 1,
+        "comm_mode_1_enable_coil": 2,
+        "slave_id_set_coil": 3,
+        "software_reset_coil": 4,
+        "stop_coil_address": 6
     },
     "app": {
-        "window_title": "Device Flasher",
+        "window_title": "Device Tester",
         "window_width": 500,
-        "window_height": 600
+        "window_height": 700
     }
 }

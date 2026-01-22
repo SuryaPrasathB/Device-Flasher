@@ -1,23 +1,35 @@
 import sys
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, 
-    QLabel, QComboBox, QLineEdit, QPushButton, QTextEdit, QMessageBox, QSpinBox, QAbstractSpinBox
+    QLabel, QComboBox, QTextEdit, QTabWidget, QTabBar
 )
-from PySide6.QtCore import Qt, QThread, Slot, QTimer
-from PySide6.QtGui import QIcon, QFont, QColor
+from PySide6.QtCore import Qt, QTimer, Slot
+from PySide6.QtGui import QIcon
 
 from app.modbus.port_scanner import PortScanner
-from app.core.validation import Validator
 from app.ui.worker import FlashWorker
 from app.utils.logger import logger
+from app.utils.config import config
 from app.utils.helpers import get_resource_path
+
+# Tabs
+from app.ui.tabs.slave_id_tab import SlaveIDTab
+from app.ui.tabs.testing_tab import TestingTab
+from app.ui.tabs.settings_tab import SettingsTab
+from app.ui.tabs.placeholder_tab import PlaceholderTab
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         
-        self.setWindowTitle("Device Flasher")
-        self.resize(500, 600)
+        # Load Window Settings
+        app_conf = config.get("app", default={})
+        title = app_conf.get("window_title", "Device Tester")
+        w = app_conf.get("window_width", 500)
+        h = app_conf.get("window_height", 650)
+
+        self.setWindowTitle(title)
+        self.resize(w, h)
         
         # Apply Dark Theme
         self.setStyleSheet("background-color: #1a202c; color: white;")
@@ -26,47 +38,38 @@ class MainWindow(QMainWindow):
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         self.layout = QVBoxLayout(central_widget)
-        self.layout.setSpacing(15)
-        self.layout.setContentsMargins(20, 20, 20, 20)
+        self.layout.setSpacing(10)
+        self.layout.setContentsMargins(10, 10, 10, 10)
         
-        # Header
-        self._init_header()
+        # 1. Top Bar: Port Selection & Status (Global)
+        self._init_top_bar()
         
-        # Form
-        self._init_form()
+        # 2. Tabs
+        self._init_tabs()
         
-        # Log Area
+        # 3. Log Area
         self._init_log_area()
-        
-        # Worker Thread
-        self.thread = None
-        self.worker = None
 
         # Port Auto-Refresh Timer
         self.timer = QTimer()
         self.timer.timeout.connect(self.check_ports)
-        self.timer.start(2000)  # Check every 2 seconds
+        self.timer.start(2000)
 
-        # Load Ports
+        # Legacy Worker for Flash Tab
+        self.flash_thread = None
+        self.flash_worker = None
+
         self.refresh_ports()
 
-    def _init_header(self):
-        header_layout = QVBoxLayout()
-        title = QLabel("Device Flasher")
-        title.setAlignment(Qt.AlignCenter)
-        title.setStyleSheet("font-size: 24px; font-weight: bold; color: white;")
+    def _init_top_bar(self):
+        top_layout = QHBoxLayout()
         
-        subtitle = QLabel("Flash Slave ID to Embedded Controller")
-        subtitle.setAlignment(Qt.AlignCenter)
-        subtitle.setStyleSheet("font-size: 14px; color: #a0aec0;")
+        # Logo/Title small
+        lbl = QLabel("🔌")
+        lbl.setStyleSheet("font-size: 20px;")
+        top_layout.addWidget(lbl)
         
-        header_layout.addWidget(title)
-        header_layout.addWidget(subtitle)
-        self.layout.addLayout(header_layout)
-
-    def _init_form(self):
-        # COM Port
-        self.layout.addWidget(QLabel("COM Port"))
+        # Port Combo
         self.combo_ports = QComboBox()
         self.combo_ports.addItem("Select COM Port", None)
         self.combo_ports.setStyleSheet("""
@@ -76,10 +79,9 @@ class MainWindow(QMainWindow):
                 border-radius: 4px;
                 padding: 5px;
                 color: white;
+                min-width: 150px;
             }
-            QComboBox::drop-down {
-                border: 0px;
-            }
+            QComboBox::drop-down { border: 0px; }
             QComboBox QAbstractItemView {
                 background-color: #2d3748;
                 color: white;
@@ -87,108 +89,71 @@ class MainWindow(QMainWindow):
             }
         """)
         self.combo_ports.currentIndexChanged.connect(self.on_port_changed)
-        self.layout.addWidget(self.combo_ports)
+        top_layout.addWidget(self.combo_ports)
         
-        # Status Indicator
-        self.status_layout = QHBoxLayout()
+        # Status
         self.status_dot = QLabel()
         self.status_dot.setFixedSize(12, 12)
         self.status_dot.setStyleSheet("background-color: #4a5568; border-radius: 6px;")
-        self.status_text = QLabel("Not connected")
-        self.status_text.setStyleSheet("color: #718096; font-size: 12px;")
-        self.status_layout.addWidget(self.status_dot)
-        self.status_layout.addWidget(self.status_text)
-        self.status_layout.addStretch()
-        self.layout.addLayout(self.status_layout)
+        top_layout.addWidget(self.status_dot)
         
-        # Slave ID
-        self.layout.addWidget(QLabel("Slave ID"))
+        top_layout.addStretch()
+        self.layout.addLayout(top_layout)
 
-        self.input_slave_id = QSpinBox()
-        self.input_slave_id.setButtonSymbols(QAbstractSpinBox.UpDownArrows)
-        self.input_slave_id.setRange(1, 247)
-        self.input_slave_id.setSingleStep(1)
-        self.input_slave_id.setValue(1)
-
-        arrow_up = get_resource_path("resources/arrow_up.svg").replace("\\", "/")
-        arrow_down = get_resource_path("resources/arrow_down.svg").replace("\\", "/")
-
-        self.input_slave_id.setStyleSheet(f"""
-            QSpinBox {{
-                background-color: #2d3748;
+    def _init_tabs(self):
+        self.tabs = QTabWidget()
+        self.tabs.setTabPosition(QTabWidget.South) # Bottom Tabs
+        
+        self.tabs.setStyleSheet("""
+            QTabWidget::pane {
                 border: 1px solid #4a5568;
-                border-radius: 4px;
-                padding-right: 20px;
-                color: white;
-            }}
-
-            QSpinBox::up-button {{
-                subcontrol-origin: border;
-                subcontrol-position: top right;
-                width: 16px;
-                border-left: 1px solid #4a5568;
-            }}
-
-            QSpinBox::down-button {{
-                subcontrol-origin: border;
-                subcontrol-position: bottom right;
-                width: 16px;
-                border-left: 1px solid #4a5568;
-            }}
-
-            QSpinBox::up-arrow {{
-                image: url({arrow_up});
-                width: 10px;
-                height: 10px;
-            }}
-
-            QSpinBox::down-arrow {{
-                image: url({arrow_down});
-                width: 10px;
-                height: 10px;
-            }}
-        """)
-
-        self.input_slave_id.valueChanged.connect(self.validate_form)
-
-        self.layout.addWidget(self.input_slave_id)
-        
-        # Flash Button
-        self.btn_flash = QPushButton("Set Slave ID")
-        self.btn_flash.setFixedHeight(45)
-        self.btn_flash.setStyleSheet("""
-            QPushButton {
-                background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #667eea, stop:1 #764ba2);
-                color: white;
-                border-radius: 8px;
-                font-size: 16px;
-                font-weight: bold;
-                border: none;
+                background: #1a202c;
             }
-            QPushButton:hover {
-                background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #5a67d8, stop:1 #6b46c1);
-            }
-            QPushButton:disabled {
-                background-color: #4a5568;
+            QTabBar::tab {
+                background: #2d3748;
                 color: #a0aec0;
+                padding: 10px;
+                min-width: 80px;
+            }
+            QTabBar::tab:selected {
+                background: #4a5568;
+                color: white;
+                font-weight: bold;
+            }
+            QTabBar::tab:hover {
+                background: #4a5568;
             }
         """)
-        self.btn_flash.clicked.connect(self.start_flash)
-        self.btn_flash.setEnabled(False)
-        self.layout.addWidget(self.btn_flash)
+
+        # Tab 1: Slave ID (Legacy)
+        self.tab_slave_id = SlaveIDTab()
+        self.tab_slave_id.request_flash.connect(self.start_flash_legacy)
+        self.tabs.addTab(self.tab_slave_id, "Set ID")
+
+        # Tab 2: Testing (Refactored LOE)
+        self.tab_testing = TestingTab()
+        self.tab_testing.log_message.connect(self.log)
+        self.tabs.addTab(self.tab_testing, "Testing")
+
+        # Tab 3: Settings
+        self.tab_settings = SettingsTab()
+        self.tabs.addTab(self.tab_settings, "Settings")
         
-        # Note
-        note = QLabel("<b>Note:</b> Ensure the device is properly connected before flashing. "
-                      "Valid Slave ID range: 1–247")
-        note.setStyleSheet("background-color: #2d3748; color: #cbd5e0; padding: 10px; border-radius: 4px; font-size: 12px; border-left: 4px solid #4299e1;")
-        self.layout.addWidget(note)
+        # Tab 4: Placeholder
+        self.tab_tbd = PlaceholderTab()
+        self.tabs.addTab(self.tab_tbd, "Extra")
+
+        self.layout.addWidget(self.tabs)
 
     def _init_log_area(self):
         self.log_area = QTextEdit()
         self.log_area.setReadOnly(True)
-        self.log_area.setStyleSheet("background-color: #0f131a; color: white; border: 1px solid #2d3748; border-radius: 8px; font-family: Courier New; font-size: 12px;")
+        self.log_area.setFixedHeight(100)
+        self.log_area.setStyleSheet("background-color: #0f131a; color: white; border: 1px solid #2d3748; border-radius: 4px; font-family: Courier New; font-size: 11px;")
         self.layout.addWidget(self.log_area)
         self.log("System ready...")
+
+    # --- Port Logic ---
 
     def refresh_ports(self):
         self.combo_ports.clear()
@@ -198,17 +163,16 @@ class MainWindow(QMainWindow):
             self.combo_ports.addItem(f"{p['port']} - {p['description']}", p['port'])
 
     def check_ports(self):
+        # Auto-refresh logic same as before
         new_ports = PortScanner.get_available_ports()
         current_port_data = self.combo_ports.currentData()
         
-        # Get current items in combo
         current_items = []
-        for i in range(1, self.combo_ports.count()): # Skip index 0 "Select COM Port"
+        for i in range(1, self.combo_ports.count()):
             current_items.append(self.combo_ports.itemData(i))
-            
+
         new_port_ids = [p['port'] for p in new_ports]
         
-        # Check if lists match
         if set(current_items) != set(new_port_ids):
             self.combo_ports.blockSignals(True)
             self.combo_ports.clear()
@@ -216,40 +180,34 @@ class MainWindow(QMainWindow):
             for p in new_ports:
                 self.combo_ports.addItem(f"{p['port']} - {p['description']}", p['port'])
             
-            # Restore selection if possible
             index = self.combo_ports.findData(current_port_data)
             if index >= 0:
                 self.combo_ports.setCurrentIndex(index)
             else:
                 self.combo_ports.setCurrentIndex(0)
-                
+
             self.combo_ports.blockSignals(False)
             
-            # If the selected port is gone, we need to handle that manually since we blocked signals
             if index == -1 and current_port_data is not None:
                 self.on_port_changed()
 
     def on_port_changed(self):
         port = self.combo_ports.currentData()
+
+        # Notify Tabs
+        if hasattr(self, 'tab_testing'):
+            self.tab_testing.set_current_port(port)
+
         if port:
             self.status_dot.setStyleSheet("background-color: #48bb78; border-radius: 6px;")
-            self.status_text.setText(f"Connected to {port}")
-            self.status_text.setStyleSheet("color: #48bb78; font-size: 12px;")
             self.log(f"Connected to {port}", "SUCCESS")
+            self.tab_slave_id.set_enabled(True)
         else:
             self.status_dot.setStyleSheet("background-color: #4a5568; border-radius: 6px;")
-            self.status_text.setText("Not connected")
-            self.status_text.setStyleSheet("color: #718096; font-size: 12px;")
-        self.validate_form()
+            self.log("Disconnected", "INFO")
+            self.tab_slave_id.set_enabled(False)
 
-    def validate_form(self):
-        port = self.combo_ports.currentData()
-        sid_text = self.input_slave_id.text()
-        
-        valid_port = port is not None
-        valid_sid, _ = Validator.validate_slave_id(sid_text)
-        
-        self.btn_flash.setEnabled(valid_port and valid_sid)
+    # --- Logging ---
 
     def log(self, message, level="INFO"):
         color = "#e2e8f0"
@@ -257,33 +215,33 @@ class MainWindow(QMainWindow):
         if "error" in level.lower() or "fail" in level.lower(): color = "#f56565"
         
         self.log_area.append(f'<span style="color:{color}">[{level}] {message}</span>')
-        # Also log to file/console via logger
-        if level == "ERROR":
-            logger.error(message)
-        else:
-            logger.info(message)
+        logger.info(f"[{level}] {message}")
 
-    def start_flash(self):
+    # --- Legacy Flash Logic (Tab 1) ---
+
+    def start_flash_legacy(self, slave_id):
         port = self.combo_ports.currentData()
-        slave_id = int(self.input_slave_id.text())
+        if not port:
+            self.log("No Port Selected", "ERROR")
+            return
+
+        self.tab_slave_id.set_button_state("Flashing...", False)
+        self.log(f"Starting legacy flash to ID {slave_id}...", "INFO")
+
+        # Create Thread & Worker
+        from PySide6.QtCore import QThread
+        self.flash_thread = QThread()
+        self.flash_worker = FlashWorker(port, slave_id)
+        self.flash_worker.moveToThread(self.flash_thread)
         
-        self.btn_flash.setEnabled(False)
-        self.btn_flash.setText("Flashing...")
-        self.log("Starting flash operation...")
+        self.flash_thread.started.connect(self.flash_worker.run)
+        self.flash_worker.finished.connect(self.on_flash_finished)
+        self.flash_worker.progress.connect(self.on_flash_progress)
+        self.flash_worker.finished.connect(self.flash_thread.quit)
+        self.flash_worker.finished.connect(self.flash_worker.deleteLater)
+        self.flash_thread.finished.connect(self.flash_thread.deleteLater)
         
-        # Threading
-        self.thread = QThread()
-        self.worker = FlashWorker(port, slave_id)
-        self.worker.moveToThread(self.thread)
-        
-        self.thread.started.connect(self.worker.run)
-        self.worker.finished.connect(self.on_flash_finished)
-        self.worker.progress.connect(self.on_flash_progress)
-        self.worker.finished.connect(self.thread.quit)
-        self.worker.finished.connect(self.worker.deleteLater)
-        self.thread.finished.connect(self.thread.deleteLater)
-        
-        self.thread.start()
+        self.flash_thread.start()
 
     @Slot(str, int)
     def on_flash_progress(self, msg, pct):
@@ -293,16 +251,10 @@ class MainWindow(QMainWindow):
     def on_flash_finished(self, success, message):
         if success:
             self.log(message, "SUCCESS")
-            self.btn_flash.setText("Flash Complete ✓")
+            self.tab_slave_id.set_button_state("Flash Complete ✓", True)
         else:
             self.log(message, "ERROR")
-            self.btn_flash.setText("Flash Failed")
+            self.tab_slave_id.set_button_state("Retry", True)
         
-        # Reset button after delay (simulated by timer or just manual reset logic)
-        # For now, we leave it, user can change inputs to reset or we just re-enable:
-        self.btn_flash.setEnabled(True)
-        if not success:
-             self.btn_flash.setText("Retry")
-        else:
-             self.btn_flash.setText("Set Slave ID")
-        self.validate_form()
+        # Reset button text after 3s
+        QTimer.singleShot(3000, lambda: self.tab_slave_id.set_button_state("Set Slave ID", True))
