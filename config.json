@@ -34,6 +34,15 @@
         "stop_coil_address": 6,
         "relay_update_coil": 7,
 
+        "relay_1_coil": 8,
+        "relay_2_coil": 9,
+        "relay_3_coil": 10,
+        "relay_4_coil": 11,
+        "relay_5_coil": 12,
+        "relay_6_coil": 13,
+        "relay_7_coil": 14,
+        "relay_8_coil": 15,
+
         "num_of_set_of_reading_address": 9
     },
     "app": {
