@@ -48,7 +48,7 @@ class FlashService:
             self.modbus_client.write_register(BROADCAST_ID, id_reg_addr, int(new_slave_id))
             time.sleep(0.01)
             
-            #time.sleep(0.5) # Short grace period
+            time.sleep(0.5) # Short grace period
 
             # 3. Write Update Coil
             update_progress(f"Triggering Update Coil {update_coil_addr}...", 60)

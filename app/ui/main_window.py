@@ -15,6 +15,7 @@ from app.utils.helpers import get_resource_path
 # Tabs
 from app.ui.tabs.slave_id_tab import SlaveIDTab
 from app.ui.tabs.testing_tab import TestingTab
+from app.ui.tabs.relay_tab import RelayTab
 from app.ui.tabs.settings_tab import SettingsTab
 from app.ui.tabs.placeholder_tab import PlaceholderTab
 
@@ -135,7 +136,12 @@ class MainWindow(QMainWindow):
         self.tab_testing.log_message.connect(self.log)
         self.tabs.addTab(self.tab_testing, "Testing")
 
-        # Tab 3: Settings
+        # Tab 3: Relays
+        self.tab_relays = RelayTab()
+        self.tab_relays.log_message.connect(self.log)
+        self.tabs.addTab(self.tab_relays, "Relays")
+
+        # Tab 4: Settings
         self.tab_settings = SettingsTab()
         self.tabs.addTab(self.tab_settings, "Settings")
         
@@ -197,6 +203,8 @@ class MainWindow(QMainWindow):
         # Notify Tabs
         if hasattr(self, 'tab_testing'):
             self.tab_testing.set_current_port(port)
+        if hasattr(self, 'tab_relays'):
+            self.tab_relays.set_current_port(port)
 
         if port:
             self.status_dot.setStyleSheet("background-color: #48bb78; border-radius: 6px;")
@@ -252,6 +260,8 @@ class MainWindow(QMainWindow):
         if success:
             self.log(message, "SUCCESS")
             self.tab_slave_id.set_button_state("Flash Complete ✓", True)
+            slaveid = self.tab_slave_id.input_slave_id.value()
+            self.tab_slave_id.input_slave_id.setValue(slaveid + 1)
         else:
             self.log(message, "ERROR")
             self.tab_slave_id.set_button_state("Retry", True)

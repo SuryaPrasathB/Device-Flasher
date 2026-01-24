@@ -64,21 +64,13 @@ class ModbusClientWrapper:
 
         logger.debug(f"Writing Register: ID={slave_id}, Addr={address}, Val={value}")
         
-        # Capture original state
-        original_retries = getattr(self.client, 'retries', 3)
-
         try:
-            # Set broadcast parameters
-            if slave_id == 0:
-                self.client.comm_params.retries = 0 
-                self.client.retries = 0
-                if self.client.socket:
-                    self.client.socket.timeout = 0
+            is_broadcast = (slave_id == 0)
 
             # pymodbus write_register(address, value, device_id=slave_id)
-            response = self.client.write_register(address, value, device_id=slave_id)
+            response = self.client.write_register(address, value, device_id=slave_id, no_response_expected=is_broadcast)
             
-            if slave_id == 0:
+            if is_broadcast:
                 return True, None
 
             if response.isError():
@@ -94,13 +86,6 @@ class ModbusClientWrapper:
             if slave_id == 0: return True, None
             logger.error(f"General Exception (Write Register): {e}")
             return False, str(e)
-        finally:
-            # Restore state
-            self.client.retries = original_retries
-            if hasattr(self.client, 'comm_params'):
-                self.client.comm_params.retries = original_retries
-            if self.client.socket:
-                self.client.socket.timeout = self.timeout
 
     def write_coil(self, slave_id, address, value):
         """
@@ -111,19 +96,13 @@ class ModbusClientWrapper:
 
         logger.debug(f"Writing Coil: ID={slave_id}, Addr={address}, Val={value}")
         
-        original_retries = getattr(self.client, 'retries', 3)
-        
         try:
-            if slave_id == 0:
-                self.client.comm_params.retries = 0
-                self.client.retries = 0
-                if self.client.socket:
-                    self.client.socket.timeout = 0
+            is_broadcast = (slave_id == 0)
 
             # pymodbus write_coil(address, value, device_id=slave_id)
-            response = self.client.write_coil(address, value, device_id=slave_id)
+            response = self.client.write_coil(address, value, device_id=slave_id, no_response_expected=is_broadcast)
             
-            if slave_id == 0:
+            if is_broadcast:
                 return True, None
 
             if response.isError():
@@ -139,19 +118,13 @@ class ModbusClientWrapper:
             if slave_id == 0: return True, None
             logger.error(f"General Exception (Write Coil): {e}")
             return False, str(e)
-        finally:
-            self.client.retries = original_retries
-            if hasattr(self.client, 'comm_params'):
-                self.client.comm_params.retries = original_retries
-            if self.client.socket:
-                self.client.socket.timeout = self.timeout
 
     def write_int32(self, slave_id, address, value):
         """
         Writes a 32-bit integer to two 16-bit holding registers.
-        Uses Little Endian Word Order:
-          Address     : Low Word (LSW)
-          Address + 1 : High Word (MSW)
+        Uses Big Endian Word Order:
+          Address     : High Word (MSW)
+          Address + 1 : Low Word (LSW)
         Writes are performed as two separate single-register writes.
         """
         if not self.connected or not self.client:
@@ -162,17 +135,17 @@ class ModbusClientWrapper:
         high_word_val = (value >> 16) & 0xFFFF
         low_word_val = value & 0xFFFF
         
-        logger.debug(f"Writing 32-bit Int (Little Endian): ID={slave_id}, Addr={address}, Val={value} -> Low={low_word_val}, High={high_word_val}")
+        logger.debug(f"Writing 32-bit Int (Big Endian): ID={slave_id}, Addr={address}, Val={value} -> High={high_word_val}, Low={low_word_val}")
 
-        # 1. Write Low Word to 'address'
-        success_low, msg_low = self.write_register(slave_id, address, low_word_val)
-        if not success_low:
-            return False, f"Failed writing Low Word: {msg_low}"
-
-        # 2. Write High Word to 'address + 1'
-        success_high, msg_high = self.write_register(slave_id, address + 1, high_word_val)
+        # 1. Write High Word to 'address'
+        success_high, msg_high = self.write_register(slave_id, address, high_word_val)
         if not success_high:
             return False, f"Failed writing High Word: {msg_high}"
+
+        # 2. Write Low Word to 'address + 1'
+        success_low, msg_low = self.write_register(slave_id, address + 1, low_word_val)
+        if not success_low:
+            return False, f"Failed writing Low Word: {msg_low}"
             
         return True, None
             

@@ -144,6 +144,12 @@ class TestingTab(QWidget):
         self.inp_loe_ref_const = self._create_spinbox(2147483647) # 32-bit
         f_loe.addRow("Reference Constant:", self.inp_loe_ref_const)
 
+        self.inp_loe_coa_lower = self._create_spinbox(2147483647) # 32-bit
+        f_loe.addRow("COA Lower Limit:", self.inp_loe_coa_lower)
+
+        self.inp_loe_coa_higher = self._create_spinbox(2147483647) # 32-bit
+        f_loe.addRow("COA Higher Limit:", self.inp_loe_coa_higher)
+
         self.inp_loe_pulses = self._create_spinbox(65535)
         self.inp_loe_pulses.setValue(10)
         f_loe.addRow("No. Test Pulses:", self.inp_loe_pulses)
@@ -357,6 +363,8 @@ class TestingTab(QWidget):
         if test_type == 111: # LOE
             data["dut_meter_constant"] = self.inp_loe_meter_const.value()
             data["ref_meter_constant"] = self.inp_loe_ref_const.value()
+            data["coa_lower_limit"] = self.inp_loe_coa_lower.value()
+            data["coa_higher_limit"] = self.inp_loe_coa_higher.value()
             data["dut_meter_target_pulses"] = self.inp_loe_pulses.value()
             data["num_of_pulse_skip"] = self.inp_loe_skip.value()
 
@@ -440,13 +448,13 @@ class TestingTab(QWidget):
             count = results.get("pulse_count", 0)
 
             code_str = "UNKNOWN"
-            if code == 111: code_str = "PASS"
-            elif code == 222: code_str = "FAIL"
-            elif code == 333: code_str = "NO RESULT"
+            if code == 80: code_str = "PASS"
+            elif code == 70: code_str = "FAIL"
+            elif code == 78: code_str = "NO RESULT"
             else: code_str = str(code)
 
             color = "#f56565" # Red
-            if code == 111: color = "#48bb78" # Green
+            if code == 80: color = "#48bb78" # Green
 
             lbl_res = self.lbl_sc_result if test_type == 222 else self.lbl_nl_result
             lbl_cnt = self.lbl_sc_count if test_type == 222 else self.lbl_nl_count
@@ -534,6 +542,8 @@ class TestWorker(QObject):
         if tt == 111: # LOE
             self._write_generic(self.client.write_register, self._get_addr("dut_meter_constant_address"), d["dut_meter_constant"], "Meter Constant")
             self._write_generic(self.client.write_int32, self._get_addr("ref_meter_constant_address"), d["ref_meter_constant"], "Ref Constant")
+            self._write_generic(self.client.write_int32, self._get_addr("coa_lower_limit_address"), d["coa_lower_limit"], "COA Lower")
+            self._write_generic(self.client.write_int32, self._get_addr("coa_higher_limit_address"), d["coa_higher_limit"], "COA Higher")
             self._write_generic(self.client.write_register, self._get_addr("dut_meter_target_pulses_address"), d["dut_meter_target_pulses"], "Target Pulses")
             self._write_generic(self.client.write_register, self._get_addr("num_of_pulse_skip_address"), d["num_of_pulse_skip"], "Pulse Skip")
 
