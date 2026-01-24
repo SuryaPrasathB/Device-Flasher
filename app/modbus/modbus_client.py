@@ -64,21 +64,13 @@ class ModbusClientWrapper:
 
         logger.debug(f"Writing Register: ID={slave_id}, Addr={address}, Val={value}")
         
-        # Capture original state
-        original_retries = getattr(self.client, 'retries', 3)
-
         try:
-            # Set broadcast parameters
-            if slave_id == 0:
-                self.client.comm_params.retries = 0 
-                self.client.retries = 0
-                if self.client.socket:
-                    self.client.socket.timeout = 0
+            is_broadcast = (slave_id == 0)
 
             # pymodbus write_register(address, value, device_id=slave_id)
-            response = self.client.write_register(address, value, device_id=slave_id)
+            response = self.client.write_register(address, value, device_id=slave_id, no_response_expected=is_broadcast)
             
-            if slave_id == 0:
+            if is_broadcast:
                 return True, None
 
             if response.isError():
@@ -94,13 +86,6 @@ class ModbusClientWrapper:
             if slave_id == 0: return True, None
             logger.error(f"General Exception (Write Register): {e}")
             return False, str(e)
-        finally:
-            # Restore state
-            self.client.retries = original_retries
-            if hasattr(self.client, 'comm_params'):
-                self.client.comm_params.retries = original_retries
-            if self.client.socket:
-                self.client.socket.timeout = self.timeout
 
     def write_coil(self, slave_id, address, value):
         """
@@ -111,19 +96,13 @@ class ModbusClientWrapper:
 
         logger.debug(f"Writing Coil: ID={slave_id}, Addr={address}, Val={value}")
         
-        original_retries = getattr(self.client, 'retries', 3)
-        
         try:
-            if slave_id == 0:
-                self.client.comm_params.retries = 0
-                self.client.retries = 0
-                if self.client.socket:
-                    self.client.socket.timeout = 0
+            is_broadcast = (slave_id == 0)
 
             # pymodbus write_coil(address, value, device_id=slave_id)
-            response = self.client.write_coil(address, value, device_id=slave_id)
+            response = self.client.write_coil(address, value, device_id=slave_id, no_response_expected=is_broadcast)
             
-            if slave_id == 0:
+            if is_broadcast:
                 return True, None
 
             if response.isError():
@@ -139,12 +118,6 @@ class ModbusClientWrapper:
             if slave_id == 0: return True, None
             logger.error(f"General Exception (Write Coil): {e}")
             return False, str(e)
-        finally:
-            self.client.retries = original_retries
-            if hasattr(self.client, 'comm_params'):
-                self.client.comm_params.retries = original_retries
-            if self.client.socket:
-                self.client.socket.timeout = self.timeout
 
     def write_int32(self, slave_id, address, value):
         """

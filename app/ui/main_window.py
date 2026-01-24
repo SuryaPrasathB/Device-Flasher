@@ -260,6 +260,8 @@ class MainWindow(QMainWindow):
         if success:
             self.log(message, "SUCCESS")
             self.tab_slave_id.set_button_state("Flash Complete ✓", True)
+            slaveid = self.tab_slave_id.input_slave_id.value()
+            self.tab_slave_id.input_slave_id.setValue(slaveid + 1)
         else:
             self.log(message, "ERROR")
             self.tab_slave_id.set_button_state("Retry", True)
