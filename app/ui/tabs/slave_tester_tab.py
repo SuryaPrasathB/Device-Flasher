@@ -1,3 +1,4 @@
+import time
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
     QSpinBox, QTextEdit, QGroupBox, QFormLayout
@@ -148,8 +149,7 @@ class SlaveTesterTab(QWidget):
 
     @Slot(str)
     def on_worker_progress(self, msg):
-        # self.results_area.append(f'<span style="color:#cbd5e0">{msg}</span>')
-        pass # Optional logging
+        self.results_area.append(f'<span style="color:#cbd5e0">{msg}</span>')
 
     @Slot()
     def on_worker_finished(self):
@@ -183,7 +183,6 @@ class SlaveTestWorker(QObject):
 
             for sid in range(self.start_id, self.end_id + 1):
                 # Small delay to prevent bus flooding if needed, though Modbus is synchronous usually
-                # time.sleep(0.05)
 
                 # We read 1 register
                 regs, err = self.client.read_holding_registers(sid, check_addr, 1)
@@ -192,6 +191,9 @@ class SlaveTestWorker(QObject):
                     self.result.emit(str(sid), "PASS")
                 else:
                     self.result.emit(str(sid), "FAIL")
+
+                time.sleep(1)
+                
 
         except Exception as e:
             self.progress.emit(f"Error: {e}")
