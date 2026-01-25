@@ -25,7 +25,6 @@
         "result_code_address": 20,
         "dut_meter_pulse_count_address": 21,
         "slave_id_register_address": 22,
-
         "start_coil_address": 1,
         "comm_mode_1_enable_coil": 2,
         "slave_id_set_coil": 3,
@@ -33,7 +32,6 @@
         "comm_mode_set_coil": 5,
         "stop_coil_address": 6,
         "relay_update_coil": 7,
-
         "relay_1_coil": 8,
         "relay_2_coil": 9,
         "relay_3_coil": 10,
@@ -42,11 +40,10 @@
         "relay_6_coil": 13,
         "relay_7_coil": 14,
         "relay_8_coil": 15,
-
         "num_of_set_of_reading_address": 9
     },
     "app": {
-        "window_title": "Device Tester",
+        "window_title": "LDU Tester",
         "window_width": 500,
         "window_height": 700
     }

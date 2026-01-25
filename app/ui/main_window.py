@@ -26,7 +26,7 @@ class MainWindow(QMainWindow):
         
         # Load Window Settings
         app_conf = config.get("app", default={})
-        title = app_conf.get("window_title", "Device Tester")
+        title = app_conf.get("window_title", "LDU Tester")
         w = app_conf.get("window_width", 500)
         h = app_conf.get("window_height", 650)
 
