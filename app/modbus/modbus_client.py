@@ -1,3 +1,4 @@
+import inspect
 from pymodbus.client import ModbusSerialClient
 from pymodbus.exceptions import ModbusException
 from app.utils.logger import logger
@@ -7,6 +8,7 @@ class ModbusClientWrapper:
     def __init__(self):
         self.client = None
         self.connected = False
+        self.slave_param = "device_id" # Default for pymodbus 3.x
         self._load_settings()
 
     def _load_settings(self):
@@ -33,6 +35,12 @@ class ModbusClientWrapper:
                 stopbits=self.stopbits,
                 timeout=self.timeout
             )
+
+            # Detect correct parameter for slave ID (device_id vs slave vs unit)
+            self._detect_slave_param()
+            
+            # Hook execute to log hex string
+            self._hook_execute()
             
             self.connected = self.client.connect()
             if self.connected:
@@ -45,6 +53,51 @@ class ModbusClientWrapper:
             logger.error(f"Connection exception: {e}")
             self.connected = False
             return False
+
+    def _detect_slave_param(self):
+        try:
+            # We inspect read_holding_registers as a proxy for all methods
+            sig = inspect.signature(self.client.read_holding_registers)
+            params = sig.parameters
+            if 'slave' in params:
+                self.slave_param = 'slave'
+            elif 'unit' in params:
+                self.slave_param = 'unit'
+            else:
+                self.slave_param = 'device_id'
+            
+            logger.debug(f"Detected Modbus parameter: {self.slave_param}")
+        except Exception as e:
+            logger.warning(f"Failed to detect Modbus parameter, defaulting to device_id: {e}")
+            self.slave_param = 'device_id'
+
+    def _hook_execute(self):
+        original_execute = self.client.execute
+        
+        def _execute_wrapper(request, *args, **kwargs):
+            try:
+                # Log the packet hex
+                if self.client.framer:
+                    packet = None
+                    # Support multiple pymodbus versions
+                    if hasattr(self.client.framer, 'buildFrame'):
+                        # pymodbus 3.x (newer)
+                        packet = self.client.framer.buildFrame(request)
+                    elif hasattr(self.client.framer, 'buildPacket'):
+                        # pymodbus 2.x / older 3.x
+                        packet = self.client.framer.buildPacket(request)
+                    
+                    if packet:
+                        hex_str = " ".join([f"{b:02X}" for b in packet])
+                        logger.debug(f"TX: {hex_str}")
+            except Exception as e:
+                # Fallback or ignore logging errors
+                logger.debug(f"Failed to log packet: {e}")
+                pass
+            
+            return original_execute(request, *args, **kwargs)
+            
+        self.client.execute = _execute_wrapper
 
     def disconnect(self):
         """
@@ -66,9 +119,11 @@ class ModbusClientWrapper:
         
         try:
             is_broadcast = (slave_id == 0)
+            
+            kwargs = {self.slave_param: slave_id}
 
             # pymodbus write_register(address, value, device_id=slave_id)
-            response = self.client.write_register(address, value, device_id=slave_id, no_response_expected=is_broadcast)
+            response = self.client.write_register(address, value, no_response_expected=is_broadcast, **kwargs)
             
             if is_broadcast:
                 return True, None
@@ -98,9 +153,11 @@ class ModbusClientWrapper:
         
         try:
             is_broadcast = (slave_id == 0)
+            
+            kwargs = {self.slave_param: slave_id}
 
             # pymodbus write_coil(address, value, device_id=slave_id)
-            response = self.client.write_coil(address, value, device_id=slave_id, no_response_expected=is_broadcast)
+            response = self.client.write_coil(address, value, no_response_expected=is_broadcast, **kwargs)
             
             if is_broadcast:
                 return True, None
@@ -158,7 +215,8 @@ class ModbusClientWrapper:
              
         logger.debug(f"Reading Registers: ID={slave_id}, Addr={address}, Count={count}")
         try:
-            response = self.client.read_holding_registers(address, count=count, device_id=slave_id)
+            kwargs = {self.slave_param: slave_id}
+            response = self.client.read_holding_registers(address, count=count, **kwargs)
             if response.isError():
                 logger.error(f"Modbus Error (Read Register): {response}")
                 return None, str(response)

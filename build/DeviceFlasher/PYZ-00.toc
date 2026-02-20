@@ -1,15 +1,15 @@
-('D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+('D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
  'Flasher\\build\\DeviceFlasher\\PYZ-00.pyz',
  [('PySide6',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\PySide6\\__init__.py',
    'PYMODULE'),
   ('PySide6.support',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\PySide6\\support\\__init__.py',
    'PYMODULE'),
   ('PySide6.support.deprecated',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\PySide6\\support\\deprecated.py',
    'PYMODULE'),
   ('__future__',
@@ -37,11 +37,11 @@
    'C:\\Users\\hp\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\_pydecimal.py',
    'PYMODULE'),
   ('_pyi_rth_utils',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\PyInstaller\\fake-modules\\_pyi_rth_utils\\__init__.py',
    'PYMODULE'),
   ('_pyi_rth_utils.qt',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\PyInstaller\\fake-modules\\_pyi_rth_utils\\qt.py',
    'PYMODULE'),
   ('_strptime',
@@ -53,42 +53,67 @@
   ('app', '-', 'PYMODULE'),
   ('app.core', '-', 'PYMODULE'),
   ('app.core.flash_service',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\app\\core\\flash_service.py',
    'PYMODULE'),
   ('app.core.validation',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\app\\core\\validation.py',
    'PYMODULE'),
   ('app.modbus', '-', 'PYMODULE'),
   ('app.modbus.modbus_client',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\app\\modbus\\modbus_client.py',
    'PYMODULE'),
   ('app.modbus.port_scanner',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\app\\modbus\\port_scanner.py',
    'PYMODULE'),
   ('app.ui', '-', 'PYMODULE'),
   ('app.ui.main_window',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\app\\ui\\main_window.py',
    'PYMODULE'),
+  ('app.ui.tabs', '-', 'PYMODULE'),
+  ('app.ui.tabs.placeholder_tab',
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
+   'Flasher\\app\\ui\\tabs\\placeholder_tab.py',
+   'PYMODULE'),
+  ('app.ui.tabs.relay_tab',
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
+   'Flasher\\app\\ui\\tabs\\relay_tab.py',
+   'PYMODULE'),
+  ('app.ui.tabs.settings_tab',
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
+   'Flasher\\app\\ui\\tabs\\settings_tab.py',
+   'PYMODULE'),
+  ('app.ui.tabs.slave_id_tab',
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
+   'Flasher\\app\\ui\\tabs\\slave_id_tab.py',
+   'PYMODULE'),
+  ('app.ui.tabs.slave_tester_tab',
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
+   'Flasher\\app\\ui\\tabs\\slave_tester_tab.py',
+   'PYMODULE'),
+  ('app.ui.tabs.testing_tab',
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
+   'Flasher\\app\\ui\\tabs\\testing_tab.py',
+   'PYMODULE'),
   ('app.ui.worker',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\app\\ui\\worker.py',
    'PYMODULE'),
   ('app.utils', '-', 'PYMODULE'),
   ('app.utils.config',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\app\\utils\\config.py',
    'PYMODULE'),
   ('app.utils.helpers',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\app\\utils\\helpers.py',
    'PYMODULE'),
   ('app.utils.logger',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\app\\utils\\logger.py',
    'PYMODULE'),
   ('argparse',
@@ -548,167 +573,167 @@
    'C:\\Users\\hp\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\py_compile.py',
    'PYMODULE'),
   ('pymodbus',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\pymodbus\\__init__.py',
    'PYMODULE'),
   ('pymodbus.client',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\pymodbus\\client\\__init__.py',
    'PYMODULE'),
   ('pymodbus.client.base',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\pymodbus\\client\\base.py',
    'PYMODULE'),
   ('pymodbus.client.mixin',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\pymodbus\\client\\mixin.py',
    'PYMODULE'),
   ('pymodbus.client.serial',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\pymodbus\\client\\serial.py',
    'PYMODULE'),
   ('pymodbus.client.tcp',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\pymodbus\\client\\tcp.py',
    'PYMODULE'),
   ('pymodbus.client.tls',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\pymodbus\\client\\tls.py',
    'PYMODULE'),
   ('pymodbus.client.udp',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\pymodbus\\client\\udp.py',
    'PYMODULE'),
   ('pymodbus.constants',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\pymodbus\\constants.py',
    'PYMODULE'),
   ('pymodbus.datastore',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\pymodbus\\datastore\\__init__.py',
    'PYMODULE'),
   ('pymodbus.datastore.context',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\pymodbus\\datastore\\context.py',
    'PYMODULE'),
   ('pymodbus.datastore.sequential',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\pymodbus\\datastore\\sequential.py',
    'PYMODULE'),
   ('pymodbus.datastore.simulator',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\pymodbus\\datastore\\simulator.py',
    'PYMODULE'),
   ('pymodbus.datastore.sparse',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\pymodbus\\datastore\\sparse.py',
    'PYMODULE'),
   ('pymodbus.datastore.store',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\pymodbus\\datastore\\store.py',
    'PYMODULE'),
   ('pymodbus.exceptions',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\pymodbus\\exceptions.py',
    'PYMODULE'),
   ('pymodbus.framer',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\pymodbus\\framer\\__init__.py',
    'PYMODULE'),
   ('pymodbus.framer.ascii',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\pymodbus\\framer\\ascii.py',
    'PYMODULE'),
   ('pymodbus.framer.base',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\pymodbus\\framer\\base.py',
    'PYMODULE'),
   ('pymodbus.framer.rtu',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\pymodbus\\framer\\rtu.py',
    'PYMODULE'),
   ('pymodbus.framer.socket',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\pymodbus\\framer\\socket.py',
    'PYMODULE'),
   ('pymodbus.framer.tls',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\pymodbus\\framer\\tls.py',
    'PYMODULE'),
   ('pymodbus.logging',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\pymodbus\\logging.py',
    'PYMODULE'),
   ('pymodbus.pdu',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\pymodbus\\pdu\\__init__.py',
    'PYMODULE'),
   ('pymodbus.pdu.bit_message',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\pymodbus\\pdu\\bit_message.py',
    'PYMODULE'),
   ('pymodbus.pdu.decoders',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\pymodbus\\pdu\\decoders.py',
    'PYMODULE'),
   ('pymodbus.pdu.device',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\pymodbus\\pdu\\device.py',
    'PYMODULE'),
   ('pymodbus.pdu.diag_message',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\pymodbus\\pdu\\diag_message.py',
    'PYMODULE'),
   ('pymodbus.pdu.events',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\pymodbus\\pdu\\events.py',
    'PYMODULE'),
   ('pymodbus.pdu.exceptionresponse',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\pymodbus\\pdu\\exceptionresponse.py',
    'PYMODULE'),
   ('pymodbus.pdu.file_message',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\pymodbus\\pdu\\file_message.py',
    'PYMODULE'),
   ('pymodbus.pdu.mei_message',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\pymodbus\\pdu\\mei_message.py',
    'PYMODULE'),
   ('pymodbus.pdu.other_message',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\pymodbus\\pdu\\other_message.py',
    'PYMODULE'),
   ('pymodbus.pdu.pdu',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\pymodbus\\pdu\\pdu.py',
    'PYMODULE'),
   ('pymodbus.pdu.register_message',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\pymodbus\\pdu\\register_message.py',
    'PYMODULE'),
   ('pymodbus.transaction',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\pymodbus\\transaction\\__init__.py',
    'PYMODULE'),
   ('pymodbus.transaction.transaction',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\pymodbus\\transaction\\transaction.py',
    'PYMODULE'),
   ('pymodbus.transport',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\pymodbus\\transport\\__init__.py',
    'PYMODULE'),
   ('pymodbus.transport.serialtransport',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\pymodbus\\transport\\serialtransport.py',
    'PYMODULE'),
   ('pymodbus.transport.transport',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\pymodbus\\transport\\transport.py',
    'PYMODULE'),
   ('pymodbus.utilities',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\pymodbus\\utilities.py',
    'PYMODULE'),
   ('queue',
@@ -730,63 +755,63 @@
    'C:\\Users\\hp\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\selectors.py',
    'PYMODULE'),
   ('serial',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\serial\\__init__.py',
    'PYMODULE'),
   ('serial.serialcli',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\serial\\serialcli.py',
    'PYMODULE'),
   ('serial.serialjava',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\serial\\serialjava.py',
    'PYMODULE'),
   ('serial.serialposix',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\serial\\serialposix.py',
    'PYMODULE'),
   ('serial.serialutil',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\serial\\serialutil.py',
    'PYMODULE'),
   ('serial.serialwin32',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\serial\\serialwin32.py',
    'PYMODULE'),
   ('serial.tools',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\serial\\tools\\__init__.py',
    'PYMODULE'),
   ('serial.tools.list_ports',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\serial\\tools\\list_ports.py',
    'PYMODULE'),
   ('serial.tools.list_ports_common',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\serial\\tools\\list_ports_common.py',
    'PYMODULE'),
   ('serial.tools.list_ports_linux',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\serial\\tools\\list_ports_linux.py',
    'PYMODULE'),
   ('serial.tools.list_ports_osx',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\serial\\tools\\list_ports_osx.py',
    'PYMODULE'),
   ('serial.tools.list_ports_posix',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\serial\\tools\\list_ports_posix.py',
    'PYMODULE'),
   ('serial.tools.list_ports_windows',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\serial\\tools\\list_ports_windows.py',
    'PYMODULE'),
   ('serial.win32',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\serial\\win32.py',
    'PYMODULE'),
   ('shiboken6',
-   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No XXX_LDU_FUJI\\Device '
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\venv\\Lib\\site-packages\\shiboken6\\__init__.py',
    'PYMODULE'),
   ('shutil',

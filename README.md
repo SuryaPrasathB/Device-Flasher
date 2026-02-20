@@ -1,4 +1,4 @@
-# Device Flasher
+# LDU Tester
 
 A modular, professional desktop application to configure Modbus RTU slave devices.
 

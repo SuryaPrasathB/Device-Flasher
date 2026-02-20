@@ -18,6 +18,7 @@ from app.ui.tabs.testing_tab import TestingTab
 from app.ui.tabs.relay_tab import RelayTab
 from app.ui.tabs.settings_tab import SettingsTab
 from app.ui.tabs.placeholder_tab import PlaceholderTab
+from app.ui.tabs.slave_tester_tab import SlaveTesterTab
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -25,7 +26,7 @@ class MainWindow(QMainWindow):
         
         # Load Window Settings
         app_conf = config.get("app", default={})
-        title = app_conf.get("window_title", "Device Tester")
+        title = app_conf.get("window_title", "LDU Tester")
         w = app_conf.get("window_width", 500)
         h = app_conf.get("window_height", 650)
 
@@ -144,8 +145,13 @@ class MainWindow(QMainWindow):
         # Tab 4: Settings
         self.tab_settings = SettingsTab()
         self.tabs.addTab(self.tab_settings, "Settings")
+
+        # Tab 5: Slave Tester
+        self.tab_slave_tester = SlaveTesterTab()
+        self.tab_slave_tester.log_message.connect(self.log)
+        self.tabs.addTab(self.tab_slave_tester, "Slave Tester")
         
-        # Tab 4: Placeholder
+        # Tab 6: Placeholder
         self.tab_tbd = PlaceholderTab()
         self.tabs.addTab(self.tab_tbd, "Extra")
 
@@ -205,6 +211,8 @@ class MainWindow(QMainWindow):
             self.tab_testing.set_current_port(port)
         if hasattr(self, 'tab_relays'):
             self.tab_relays.set_current_port(port)
+        if hasattr(self, 'tab_slave_tester'):
+            self.tab_slave_tester.set_current_port(port)
 
         if port:
             self.status_dot.setStyleSheet("background-color: #48bb78; border-radius: 6px;")
