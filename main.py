@@ -10,7 +10,7 @@ from PySide6.QtWidgets import QApplication
 from PySide6.QtGui import QIcon
 
 def main():
-    logger.info("Starting Device Flasher Application...")
+    logger.info("Starting LDU Tester Application...")
     
     # Import MainWindow here to avoid circular imports or early Qt init
     try:

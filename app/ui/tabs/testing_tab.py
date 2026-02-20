@@ -144,10 +144,10 @@ class TestingTab(QWidget):
         self.inp_loe_ref_const = self._create_spinbox(2147483647) # 32-bit
         f_loe.addRow("Reference Constant:", self.inp_loe_ref_const)
 
-        self.inp_loe_coa_lower = self._create_spinbox(2147483647) # 32-bit
+        self.inp_loe_coa_lower = self._create_spinbox(2147483647, -2147483648) # 32-bit
         f_loe.addRow("COA Lower Limit:", self.inp_loe_coa_lower)
 
-        self.inp_loe_coa_higher = self._create_spinbox(2147483647) # 32-bit
+        self.inp_loe_coa_higher = self._create_spinbox(2147483647, -2147483648) # 32-bit
         f_loe.addRow("COA Higher Limit:", self.inp_loe_coa_higher)
 
         self.inp_loe_pulses = self._create_spinbox(65535)
@@ -252,9 +252,9 @@ class TestingTab(QWidget):
         self.result_widgets[555] = w_none2
         self.result_stack.addWidget(w_none2)
 
-    def _create_spinbox(self, max_val):
+    def _create_spinbox(self, max_val, min_val=0):
         sb = QSpinBox()
-        sb.setRange(0, max_val)
+        sb.setRange(min_val, max_val)
         self._style_spinbox(sb)
         return sb
 

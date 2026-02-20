@@ -192,7 +192,7 @@ class SlaveTestWorker(QObject):
                 else:
                     self.result.emit(str(sid), "FAIL")
 
-                time.sleep(1)
+                time.sleep(0.1)
                 
 
         except Exception as e:
