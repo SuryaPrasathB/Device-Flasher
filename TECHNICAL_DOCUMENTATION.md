@@ -1,4 +1,4 @@
-# LDU Tester / DeviceFlasher - Technical Documentation
+# LDU Tester - Technical Documentation
 
 **Version:** 1.0.0
 **Date:** 2024-05-22
