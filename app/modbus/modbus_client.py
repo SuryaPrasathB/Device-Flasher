@@ -175,6 +175,40 @@ class ModbusClientWrapper:
             if slave_id == 0: return True, None
             logger.error(f"General Exception (Write Coil): {e}")
             return False, str(e)
+    
+    def write_registers(self, slave_id, address, values):
+        """
+        Writes multiple holding registers.
+        """
+        if not self.connected or not self.client:
+            raise ConnectionError("Not connected to Modbus device.")
+
+        logger.debug(f"Writing Registers: ID={slave_id}, Addr={address}, Values={values}")
+        
+        try:
+            is_broadcast = (slave_id == 0)
+            
+            kwargs = {self.slave_param: slave_id}
+
+            # pymodbus write_registers(address, values, device_id=slave_id)
+            response = self.client.write_registers(address, values, no_response_expected=is_broadcast, **kwargs)
+            
+            if is_broadcast:
+                return True, None
+
+            if response.isError():
+                logger.error(f"Modbus Error (Write Registers): {response}")
+                return False, str(response)
+            
+            return True, None
+        except ModbusException as e:
+            if slave_id == 0: return True, None
+            logger.error(f"Modbus Exception (Write Registers): {e}")
+            return False, str(e)
+        except Exception as e:
+            if slave_id == 0: return True, None
+            logger.error(f"General Exception (Write Registers): {e}")
+            return False, str(e)
 
     def write_int32(self, slave_id, address, value):
         """

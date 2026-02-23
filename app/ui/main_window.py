@@ -19,6 +19,7 @@ from app.ui.tabs.relay_tab import RelayTab
 from app.ui.tabs.settings_tab import SettingsTab
 from app.ui.tabs.placeholder_tab import PlaceholderTab
 from app.ui.tabs.slave_tester_tab import SlaveTesterTab
+from app.ui.tabs.serial_scan_tab import SerialScanTab
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -142,18 +143,19 @@ class MainWindow(QMainWindow):
         self.tab_relays.log_message.connect(self.log)
         self.tabs.addTab(self.tab_relays, "Relays")
 
-        # Tab 4: Settings
-        self.tab_settings = SettingsTab()
-        self.tabs.addTab(self.tab_settings, "Settings")
-
-        # Tab 5: Slave Tester
+        # Tab 4: Slave Tester
         self.tab_slave_tester = SlaveTesterTab()
         self.tab_slave_tester.log_message.connect(self.log)
         self.tabs.addTab(self.tab_slave_tester, "Slave Tester")
-        
-        # Tab 6: Placeholder
-        self.tab_tbd = PlaceholderTab()
-        self.tabs.addTab(self.tab_tbd, "Extra")
+
+        # Tab 5: Serial Scan
+        self.tab_serial_scan = SerialScanTab()
+        self.tab_serial_scan.log_message.connect(self.log)
+        self.tabs.addTab(self.tab_serial_scan, "Serial Scan")
+
+        # Tab 6: Settings
+        self.tab_settings = SettingsTab()
+        self.tabs.addTab(self.tab_settings, "Settings")
 
         self.layout.addWidget(self.tabs)
 
@@ -213,6 +215,8 @@ class MainWindow(QMainWindow):
             self.tab_relays.set_current_port(port)
         if hasattr(self, 'tab_slave_tester'):
             self.tab_slave_tester.set_current_port(port)
+        if hasattr(self, 'tab_serial_scan'):
+            self.tab_serial_scan.set_current_port(port)
 
         if port:
             self.status_dot.setStyleSheet("background-color: #48bb78; border-radius: 6px;")

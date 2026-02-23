@@ -65,6 +65,7 @@ class TestingTab(QWidget):
         self.combo_test_type.addItem("NO_LOAD_TEST", 333)
         self.combo_test_type.addItem("DIAL_TEST", 444)
         self.combo_test_type.addItem("REF_METER_PULSE_TEST", 555)
+        self.combo_test_type.addItem("OVERALL_RESULT_DISPLAY", 777)
         self._style_combo(self.combo_test_type)
         self.combo_test_type.currentIndexChanged.connect(self.on_test_type_changed)
 
@@ -211,6 +212,23 @@ class TestingTab(QWidget):
         self.params_widgets[555] = w_ref
         self.param_stack.addWidget(w_ref)
 
+        # 777: OVERALL_RESULT_DISPLAY
+        w_res = QWidget()
+        f_res = QFormLayout(w_res)
+        f_res.setLabelAlignment(Qt.AlignRight)
+
+        self.inp_res_status = QComboBox()
+        self.inp_res_status.addItem("PASS", 80)
+        self.inp_res_status.addItem("FAIL", 70)
+        self._style_combo(self.inp_res_status)
+        f_res.addRow("Result Status:", self.inp_res_status)
+
+        self.inp_res_error_code = self._create_spinbox(65535)
+        f_res.addRow("Error Code:", self.inp_res_error_code)
+
+        self.params_widgets[777] = w_res
+        self.param_stack.addWidget(w_res)
+
     def _create_result_forms(self):
         # 111: LOE
         w_loe = QWidget()
@@ -251,6 +269,12 @@ class TestingTab(QWidget):
         w_none2.setAlignment(Qt.AlignCenter)
         self.result_widgets[555] = w_none2
         self.result_stack.addWidget(w_none2)
+
+        # 777
+        w_res_disp = QLabel("Display Mode - No Read")
+        w_res_disp.setAlignment(Qt.AlignCenter)
+        self.result_widgets[777] = w_res_disp
+        self.result_stack.addWidget(w_res_disp)
 
     def _create_spinbox(self, max_val, min_val=0):
         sb = QSpinBox()
@@ -380,6 +404,10 @@ class TestingTab(QWidget):
             data["dut_meter_constant"] = self.inp_dial_meter_const.value()
             data["ref_meter_constant"] = self.inp_dial_ref_const.value()
             data["target_energy"] = self.inp_dial_target.value()
+
+        elif test_type == 777: # Overall Status
+            data["overall_status"] = self.inp_res_status.currentData()
+            data["error_code"] = self.inp_res_error_code.value()
 
         self.run_worker("update", self.current_port, target_id, data)
 
@@ -559,6 +587,10 @@ class TestWorker(QObject):
             self._write_generic(self.client.write_register, self._get_addr("dut_meter_constant_address"), d["dut_meter_constant"], "Meter Constant")
             self._write_generic(self.client.write_int32, self._get_addr("ref_meter_constant_address"), d["ref_meter_constant"], "Ref Constant")
             self._write_generic(self.client.write_register, self._get_addr("target_energy_address"), d["target_energy"], "Target Energy")
+
+        elif tt == 777: # Overall Status
+            self._write_generic(self.client.write_register, self._get_addr("overall_status_address"), d["overall_status"], "Result Status")
+            self._write_generic(self.client.write_register, self._get_addr("error_code_address"), d["error_code"], "Error Code")
 
         self.finished.emit(True, "Parameters Updated")
 
