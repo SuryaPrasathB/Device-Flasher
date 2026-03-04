@@ -75,6 +75,14 @@
    'Flasher\\app\\ui\\main_window.py',
    'PYMODULE'),
   ('app.ui.tabs', '-', 'PYMODULE'),
+  ('app.ui.tabs.active_slaves_tab',
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
+   'Flasher\\app\\ui\\tabs\\active_slaves_tab.py',
+   'PYMODULE'),
+  ('app.ui.tabs.overall_status_tab',
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
+   'Flasher\\app\\ui\\tabs\\overall_status_tab.py',
+   'PYMODULE'),
   ('app.ui.tabs.placeholder_tab',
    'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\app\\ui\\tabs\\placeholder_tab.py',
@@ -82,6 +90,10 @@
   ('app.ui.tabs.relay_tab',
    'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\app\\ui\\tabs\\relay_tab.py',
+   'PYMODULE'),
+  ('app.ui.tabs.serial_scan_tab',
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
+   'Flasher\\app\\ui\\tabs\\serial_scan_tab.py',
    'PYMODULE'),
   ('app.ui.tabs.settings_tab',
    'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '

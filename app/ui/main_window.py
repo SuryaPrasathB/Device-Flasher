@@ -20,6 +20,8 @@ from app.ui.tabs.settings_tab import SettingsTab
 from app.ui.tabs.placeholder_tab import PlaceholderTab
 from app.ui.tabs.slave_tester_tab import SlaveTesterTab
 from app.ui.tabs.serial_scan_tab import SerialScanTab
+from app.ui.tabs.active_slaves_tab import ActiveSlavesTab
+from app.ui.tabs.overall_status_tab import OverallStatusTab
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -153,7 +155,17 @@ class MainWindow(QMainWindow):
         self.tab_serial_scan.log_message.connect(self.log)
         self.tabs.addTab(self.tab_serial_scan, "Serial Scan")
 
-        # Tab 6: Settings
+        # Tab 6: Active Slaves
+        self.tab_active_slaves = ActiveSlavesTab()
+        self.tab_active_slaves.log_message.connect(self.log)
+        self.tabs.addTab(self.tab_active_slaves, "Active Slaves")
+
+        # Tab 7: Overall Status
+        self.tab_overall_status = OverallStatusTab()
+        self.tab_overall_status.log_message.connect(self.log)
+        self.tabs.addTab(self.tab_overall_status, "Overall Status")
+
+        # Tab 8: Settings
         self.tab_settings = SettingsTab()
         self.tabs.addTab(self.tab_settings, "Settings")
 
@@ -217,6 +229,10 @@ class MainWindow(QMainWindow):
             self.tab_slave_tester.set_current_port(port)
         if hasattr(self, 'tab_serial_scan'):
             self.tab_serial_scan.set_current_port(port)
+        if hasattr(self, 'tab_active_slaves'):
+            self.tab_active_slaves.set_current_port(port)
+        if hasattr(self, 'tab_overall_status'):
+            self.tab_overall_status.set_current_port(port)
 
         if port:
             self.status_dot.setStyleSheet("background-color: #48bb78; border-radius: 6px;")

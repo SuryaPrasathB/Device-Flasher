@@ -36,6 +36,7 @@ class FlashService:
             reg_map = config.register_map
             id_reg_addr = reg_map.get("slave_id_register_address", 0)
             update_coil_addr = reg_map.get("slave_id_set_coil", 0)
+            setting_mode_coil_addr = reg_map.get("slave_id_setting_mode_coil", 0)
             
             # Broadcast ID is always 0
             BROADCAST_ID = 0
@@ -50,15 +51,21 @@ class FlashService:
             
             time.sleep(0.5) # Short grace period
 
-            # 3. Write Update Coil
-            update_progress(f"Triggering Update Coil {update_coil_addr}...", 60)
+            # 3. Trigger SLAVE_ID_SETTING_MODE Coil
+            update_progress(f"Triggering SLAVE_ID_SETTING_MODE Coil {setting_mode_coil_addr}...", 50)
+            logger.info(f"Broadcast Setting Mode Coil")
+            self.modbus_client.write_coil(BROADCAST_ID, setting_mode_coil_addr, True)
+            time.sleep(0.1)
+
+            # 4. Write Update Coil
+            update_progress(f"Triggering Update Coil {update_coil_addr}...", 80)
             
             # Broadcast Coil
             logger.info(f"Broadcast Coil")
             self.modbus_client.write_coil(BROADCAST_ID, update_coil_addr, True)
             time.sleep(0.01)
 
-            # 4. Finish
+            # 5. Finish
             # We assume success as per instructions to just broadcast and complete.
             update_progress("Broadcast complete.", 100)
             return True, f"Broadcasted New ID {new_slave_id}."

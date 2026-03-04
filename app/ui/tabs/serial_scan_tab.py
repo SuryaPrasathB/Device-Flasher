@@ -253,6 +253,10 @@ class SerialWorker(QObject):
         
         # Write multiple registers
         success, msg = self.client.write_registers(self.slave_id, start_addr, registers)
+
+        # Update coil
+        update_addr = self._get_addr("serial_update_coil")
+        self.client.write_coil(self.slave_id, update_addr, True)
         
         if success:
             self.finished.emit(True, "Serial Number Written Successfully")
