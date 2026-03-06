@@ -102,6 +102,10 @@
    'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\app\\ui\\tabs\\slave_tester_tab.py',
    'PYMODULE'),
+  ('app.ui.tabs.stress_tester_tab',
+   'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
+   'Flasher\\app\\ui\\tabs\\stress_tester_tab.py',
+   'PYMODULE'),
   ('app.ui.tabs.testing_tab',
    'D:\\SURYA\\.DEVELOPMENT\\.PROJECTS\\Project No 403_LDU_FUJI\\Device '
    'Flasher\\app\\ui\\tabs\\testing_tab.py',

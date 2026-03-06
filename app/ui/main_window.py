@@ -17,6 +17,7 @@ from app.ui.tabs.slave_id_tab import SlaveIDTab
 from app.ui.tabs.testing_tab import TestingTab
 from app.ui.tabs.relay_tab import RelayTab
 from app.ui.tabs.settings_tab import SettingsTab
+from app.ui.tabs.stress_tester_tab import StressTesterTab
 from app.ui.tabs.placeholder_tab import PlaceholderTab
 from app.ui.tabs.slave_tester_tab import SlaveTesterTab
 from app.ui.tabs.serial_scan_tab import SerialScanTab
@@ -140,7 +141,12 @@ class MainWindow(QMainWindow):
         self.tab_testing.log_message.connect(self.log)
         self.tabs.addTab(self.tab_testing, "Testing")
 
-        # Tab 3: Relays
+        # Tab 3: Stress Tester
+        self.tab_stress_tester = StressTesterTab()
+        self.tab_stress_tester.log_message.connect(self.log)
+        self.tabs.addTab(self.tab_stress_tester, "Stress Tester")
+
+        # Tab 4: Relays
         self.tab_relays = RelayTab()
         self.tab_relays.log_message.connect(self.log)
         self.tabs.addTab(self.tab_relays, "Relays")
@@ -223,6 +229,8 @@ class MainWindow(QMainWindow):
         # Notify Tabs
         if hasattr(self, 'tab_testing'):
             self.tab_testing.set_current_port(port)
+        if hasattr(self, 'tab_stress_tester'):
+            self.tab_stress_tester.set_current_port(port)
         if hasattr(self, 'tab_relays'):
             self.tab_relays.set_current_port(port)
         if hasattr(self, 'tab_slave_tester'):
