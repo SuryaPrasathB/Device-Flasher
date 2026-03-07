@@ -1,7 +1,10 @@
 import time
+import struct
+from datetime import datetime
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
-    QSpinBox, QGroupBox, QFormLayout, QGridLayout
+    QSpinBox, QGroupBox, QFormLayout, QGridLayout, QComboBox,
+    QTableWidget, QTableWidgetItem, QHeaderView
 )
 from PySide6.QtCore import Qt, Signal, QThread, Slot, QObject
 from app.utils.helpers import get_resource_path
@@ -42,15 +45,31 @@ class StressTesterTab(QWidget):
         self.spin_slave_id = self._create_spinbox(1, 1, 247)
         config_layout.addWidget(self.spin_slave_id, 0, 1)
 
+        # Data Type
+        config_layout.addWidget(QLabel("Data Type:"), 0, 2)
+        self.combo_data_type = QComboBox()
+        self.combo_data_type.addItems(["Integer (16-bit)", "Float (32-bit)", "Coil"])
+        self.combo_data_type.setStyleSheet("""
+            QComboBox {
+                background-color: #2d3748;
+                border: 1px solid #4a5568;
+                border-radius: 4px;
+                padding: 5px;
+                color: white;
+                min-width: 100px;
+            }
+        """)
+        config_layout.addWidget(self.combo_data_type, 0, 3)
+
         # Target Register
-        config_layout.addWidget(QLabel("Target Register:"), 0, 2)
+        config_layout.addWidget(QLabel("Target Register:"), 1, 0)
         self.spin_register = self._create_spinbox(self.default_target_register, 0, 65535)
-        config_layout.addWidget(self.spin_register, 0, 3)
+        config_layout.addWidget(self.spin_register, 1, 1)
 
         # Delay
-        config_layout.addWidget(QLabel("Delay (ms):"), 1, 0)
+        config_layout.addWidget(QLabel("Delay (ms):"), 1, 2)
         self.spin_delay = self._create_spinbox(200, 0, 60000)
-        config_layout.addWidget(self.spin_delay, 1, 1)
+        config_layout.addWidget(self.spin_delay, 1, 3)
 
         layout.addWidget(config_group)
 
@@ -71,6 +90,7 @@ class StressTesterTab(QWidget):
         self.lbl_total_hits = self._create_stat_label("0")
         self.lbl_success = self._create_stat_label("0", "#48bb78")
         self.lbl_failure = self._create_stat_label("0", "#f56565")
+        self.lbl_failure_percent = self._create_stat_label("0.00%", "#f6ad55")
         self.lbl_error_value = self._create_stat_label("-", "#e2e8f0")
 
         stats_layout.addWidget(QLabel("Total Hit Count:"), 0, 0)
@@ -82,10 +102,37 @@ class StressTesterTab(QWidget):
         stats_layout.addWidget(QLabel("Failure Count:"), 1, 0)
         stats_layout.addWidget(self.lbl_failure, 1, 1)
 
-        stats_layout.addWidget(QLabel("Read Value:"), 1, 2)
-        stats_layout.addWidget(self.lbl_error_value, 1, 3)
+        stats_layout.addWidget(QLabel("Failure %:"), 1, 2)
+        stats_layout.addWidget(self.lbl_failure_percent, 1, 3)
+
+        stats_layout.addWidget(QLabel("Read Value:"), 2, 0)
+        stats_layout.addWidget(self.lbl_error_value, 2, 1)
 
         layout.addWidget(stats_group)
+        
+        # 4. Snapshot Table
+        self.snapshot_table = QTableWidget()
+        self.snapshot_table.setColumnCount(5)
+        self.snapshot_table.setHorizontalHeaderLabels(["Time", "Total Hits", "Success", "Failure", "Failure %"])
+        self.snapshot_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.snapshot_table.setStyleSheet("""
+            QTableWidget {
+                background-color: #1a202c;
+                color: white;
+                gridline-color: #4a5568;
+                border: 1px solid #4a5568;
+                border-radius: 4px;
+            }
+            QHeaderView::section {
+                background-color: #2d3748;
+                color: white;
+                padding: 4px;
+                border: 1px solid #4a5568;
+                font-weight: bold;
+            }
+        """)
+        layout.addWidget(self.snapshot_table)
+        
         layout.addStretch()
 
     def _create_spinbox(self, val, min_val, max_val):
@@ -167,18 +214,20 @@ class StressTesterTab(QWidget):
         self.lbl_total_hits.setText("0")
         self.lbl_success.setText("0")
         self.lbl_failure.setText("0")
+        self.lbl_failure_percent.setText("0.00%")
         self.lbl_error_value.setText("-")
 
         # Get values
         slave_id = self.spin_slave_id.value()
         target_reg = self.spin_register.value()
         delay_ms = self.spin_delay.value()
+        data_type = self.combo_data_type.currentText()
 
-        self.log_message.emit(f"Starting stress test on ID {slave_id}, Register {target_reg}...", "INFO")
+        self.log_message.emit(f"Starting stress test on ID {slave_id}, target {target_reg} ({data_type})...", "INFO")
 
         # Setup Thread and Worker
         self.thread = QThread()
-        self.worker = StressTestWorker(self.current_port, slave_id, target_reg, delay_ms)
+        self.worker = StressTestWorker(self.current_port, slave_id, target_reg, delay_ms, data_type)
         self.worker.moveToThread(self.thread)
 
         self.thread.started.connect(self.worker.run)
@@ -206,6 +255,10 @@ class StressTesterTab(QWidget):
         self.lbl_total_hits.setText(str(total))
         self.lbl_success.setText(str(success))
         self.lbl_failure.setText(str(failure))
+        
+        fail_pct = (failure / total * 100.0) if total > 0 else 0.0
+        self.lbl_failure_percent.setText(f"{fail_pct:.2f}%")
+        
         self.lbl_error_value.setText(val_str)
 
     @Slot(str)
@@ -219,6 +272,17 @@ class StressTesterTab(QWidget):
         self.btn_toggle.setStyleSheet(self._get_btn_style("#48bb78", "#38a169")) # Green style for START
         self.btn_toggle.setEnabled(self.current_port is not None)
         self.log_message.emit("Stress test stopped.", "INFO")
+        
+        # Add snapshot to table
+        row_idx = self.snapshot_table.rowCount()
+        self.snapshot_table.insertRow(row_idx)
+        
+        curr_time = datetime.now().strftime("%H:%M:%S")
+        self.snapshot_table.setItem(row_idx, 0, QTableWidgetItem(curr_time))
+        self.snapshot_table.setItem(row_idx, 1, QTableWidgetItem(self.lbl_total_hits.text()))
+        self.snapshot_table.setItem(row_idx, 2, QTableWidgetItem(self.lbl_success.text()))
+        self.snapshot_table.setItem(row_idx, 3, QTableWidgetItem(self.lbl_failure.text()))
+        self.snapshot_table.setItem(row_idx, 4, QTableWidgetItem(self.lbl_failure_percent.text()))
 
 
 class StressTestWorker(QObject):
@@ -227,12 +291,13 @@ class StressTestWorker(QObject):
     # total, success, failure, current_value
     stats_updated = Signal(int, int, int, str)
 
-    def __init__(self, port, slave_id, target_reg, delay_ms):
+    def __init__(self, port, slave_id, target_reg, delay_ms, data_type="Integer (16-bit)"):
         super().__init__()
         self.port = port
         self.slave_id = slave_id
         self.target_reg = target_reg
         self.delay_ms = delay_ms
+        self.data_type = data_type
         self.client = ModbusClientWrapper()
         self._is_running = True
 
@@ -248,18 +313,43 @@ class StressTestWorker(QObject):
 
         try:
             while self._is_running:
-                # Read 1 register
-                regs, err = self.client.read_holding_registers(self.slave_id, self.target_reg, 1)
+                # Read register based on data type
+                err = None
+                regs = None
+                val_str = "-"
+                
+                if self.data_type == "Float (32-bit)":
+                    regs, err = self.client.read_holding_registers(self.slave_id, self.target_reg, 2)
+                    if not err and regs and len(regs) == 2:
+                        try:
+                            # Usually Big Endian Float
+                            float_val = struct.unpack('>f', struct.pack('>HH', regs[0], regs[1]))[0]
+                            val_str = f"{float_val:.4f}"
+                        except Exception as e:
+                            err = f"Conv Error: {e}"
+                elif self.data_type == "Coil":
+                    bits, err = self.client.read_coils(self.slave_id, self.target_reg, 1)
+                    if not err and bits:
+                        regs = bits
+                        val_str = str(bits[0])
+                else: # Integer (16-bit)
+                    regs, err = self.client.read_holding_registers(self.slave_id, self.target_reg, 1)
+                    if not err and regs:
+                        val_str = str(regs[0])
 
                 self.total_hits += 1
 
-                val_str = "-"
                 if not err and regs:
                     self.success_count += 1
-                    val_str = str(regs[0])
                 else:
                     self.failure_count += 1
                     val_str = "ERR"
+                    # Emit specific failure msg
+                    timestamp = datetime.now().strftime("%H:%M:%S")
+                    if err:
+                        self.progress.emit(f"[{timestamp}] Failure #{self.failure_count} at target {self.target_reg}. Reason: {err}")
+                    else:
+                        self.progress.emit(f"[{timestamp}] Failure #{self.failure_count} at target {self.target_reg}.")
 
                 self.stats_updated.emit(self.total_hits, self.success_count, self.failure_count, val_str)
 

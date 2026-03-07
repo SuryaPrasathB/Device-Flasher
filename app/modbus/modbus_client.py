@@ -258,3 +258,22 @@ class ModbusClientWrapper:
         except Exception as e:
             logger.error(f"Exception (Read Register): {e}")
             return None, str(e)
+
+    def read_coils(self, slave_id, address, count=1):
+        """
+        Reads coils. Useful for verification.
+        """
+        if not self.connected or not self.client:
+             raise ConnectionError("Not connected to Modbus device.")
+             
+        logger.debug(f"Reading Coils: ID={slave_id}, Addr={address}, Count={count}")
+        try:
+            kwargs = {self.slave_param: slave_id}
+            response = self.client.read_coils(address, count=count, **kwargs)
+            if response.isError():
+                logger.error(f"Modbus Error (Read Coils): {response}")
+                return None, str(response)
+            return response.bits, None
+        except Exception as e:
+            logger.error(f"Exception (Read Coils): {e}")
+            return None, str(e)
