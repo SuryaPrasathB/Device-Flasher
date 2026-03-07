@@ -4,7 +4,7 @@
 #define MyAppName "LDU Tester"
 #define MyAppVersion "1.0"
 #define MyAppPublisher "TriftyTexas"
-#define MyAppExeName "DeviceFlasher.exe"
+#define MyAppExeName "LDU Tester.exe"
 #define MyAppAssocName MyAppName + ""
 #define MyAppAssocExt ".exe"
 #define MyAppAssocKey StringChange(MyAppAssocName, " ", "") + MyAppAssocExt
@@ -42,7 +42,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "D:\SURYA\.DEVELOPMENT\.PROJECTS\Project No XXX_LDU_FUJI\LDU Tester\Installer\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\SURYA\.DEVELOPMENT\.PROJECTS\Project No 403_LDU_FUJI\Device Flasher\Installer\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Registry]
