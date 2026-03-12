@@ -1,4 +1,5 @@
 import inspect
+import struct
 from pymodbus.client import ModbusSerialClient
 from pymodbus.exceptions import ModbusException
 from app.utils.logger import logger
@@ -227,6 +228,38 @@ class ModbusClientWrapper:
         low_word_val = value & 0xFFFF
         
         logger.debug(f"Writing 32-bit Int (Big Endian): ID={slave_id}, Addr={address}, Val={value} -> High={high_word_val}, Low={low_word_val}")
+
+        # 1. Write High Word to 'address'
+        success_high, msg_high = self.write_register(slave_id, address, high_word_val)
+        if not success_high:
+            return False, f"Failed writing High Word: {msg_high}"
+
+        # 2. Write Low Word to 'address + 1'
+        success_low, msg_low = self.write_register(slave_id, address + 1, low_word_val)
+        if not success_low:
+            return False, f"Failed writing Low Word: {msg_low}"
+            
+        return True, None
+            
+    def write_float32(self, slave_id, address, value):
+        """
+        Writes a 32-bit float to two 16-bit holding registers.
+        Uses Big Endian Word Order:
+          Address     : High Word (MSW)
+          Address + 1 : Low Word (LSW)
+        Writes are performed as two separate single-register writes.
+        """
+        if not self.connected or not self.client:
+            raise ConnectionError("Not connected to Modbus device.")
+
+        # Convert float to 32-bit int representation
+        packed = struct.pack('>f', float(value))
+        int_val = struct.unpack('>I', packed)[0]
+        
+        high_word_val = (int_val >> 16) & 0xFFFF
+        low_word_val = int_val & 0xFFFF
+        
+        logger.debug(f"Writing 32-bit Float (Big Endian): ID={slave_id}, Addr={address}, Val={value} -> High={high_word_val}, Low={low_word_val}")
 
         # 1. Write High Word to 'address'
         success_high, msg_high = self.write_register(slave_id, address, high_word_val)

@@ -12,7 +12,7 @@ export const AppProvider = ({ children }) => {
     logs: [],
     port: null,
     tabs: {
-      set_id: { old_id: 1, new_id: 2, status: 'Idle', log: '' },
+      set_id: { id: 1, status: 'Idle', log: '' },
       slave_tester: { status: 'Idle', log: '', results: {} },
       stress_tester: {
         is_running: false,
@@ -89,18 +89,18 @@ export const AppProvider = ({ children }) => {
 
             // Handle logs separately to append
             if (payload.log) {
-               newState.logs = [...newState.logs, payload.log].slice(-50); // Keep last 50
+              newState.logs = [...newState.logs, payload.log].slice(-50); // Keep last 50
             }
 
             if (payload.port !== undefined) newState.port = payload.port;
 
             if (payload.tabs) {
-               // Deep merge tabs
-               for (const [tabKey, tabData] of Object.entries(payload.tabs)) {
-                  if (newState.tabs[tabKey]) {
-                     newState.tabs[tabKey] = { ...newState.tabs[tabKey], ...tabData };
-                  }
-               }
+              // Deep merge tabs
+              for (const [tabKey, tabData] of Object.entries(payload.tabs)) {
+                if (newState.tabs[tabKey]) {
+                  newState.tabs[tabKey] = { ...newState.tabs[tabKey], ...tabData };
+                }
+              }
             }
             return newState;
           });

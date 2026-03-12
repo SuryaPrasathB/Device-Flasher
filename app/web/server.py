@@ -103,7 +103,7 @@ async def websocket_endpoint(websocket: WebSocket, token: str = None):
 
                 # Route Web actions to GUI thread via bridge signals
                 if action == "set_slave_id":
-                    web_bridge.request_set_slave_id.emit(payload.get("old_id", 0), payload.get("new_id", 0))
+                    web_bridge.request_set_slave_id.emit(payload.get("id", 1))
                 elif action == "start_slave_tester":
                     web_bridge.request_start_slave_tester.emit(payload.get("slave_id", 1))
                 elif action == "start_stress_tester":

@@ -372,8 +372,7 @@ class MainWindow(QMainWindow):
             "port": self.combo_ports.currentData(),
             "tabs": {
                 "set_id": {
-                    "old_id": self.tab_slave_id.input_slave_id.value(),
-                    "new_id": self.tab_slave_id.input_slave_id.value() + 1,
+                    "id": self.tab_slave_id.input_slave_id.value(),
                     "status": self.tab_slave_id.btn_flash.text(),
                 },
                 "slave_tester": {
@@ -397,13 +396,14 @@ class MainWindow(QMainWindow):
         }
         web_bridge.emit_gui_state(state)
 
-    @Slot(int, int)
-    def on_web_request_set_id(self, old_id, new_id):
-        self.log(f"Web Request: Set ID {old_id} -> {new_id}")
-        # The legacy worker normally sets input_slave_id = input_slave_id + 1 upon success.
-        # So we trick it by setting the value to new_id - 1 before flashing.
-        self.tab_slave_id.input_slave_id.setValue(new_id - 1)
-        self.start_flash_legacy(old_id)
+    @Slot(int)
+    def on_web_request_set_id(self, new_id):
+        self.log(f"Web Request: Set ID {new_id}")
+        # The legacy worker normally sets input_slave_id = input_slave_id - 1 upon success.
+        # But wait, it already takes the UI value and decrements it.
+        # If we set it to new_id, the worker will decrement it to new_id - 1.
+        self.tab_slave_id.input_slave_id.setValue(new_id)
+        self.start_flash_legacy(new_id)
 
     @Slot(int)
     def on_web_request_start_slave_test(self, slave_id):
@@ -477,7 +477,7 @@ class MainWindow(QMainWindow):
             self.log(message, "SUCCESS")
             self.tab_slave_id.set_button_state("Flash Complete ✓", True)
             slaveid = self.tab_slave_id.input_slave_id.value()
-            self.tab_slave_id.input_slave_id.setValue(slaveid + 1)
+            self.tab_slave_id.input_slave_id.setValue(slaveid - 1)
         else:
             self.log(message, "ERROR")
             self.tab_slave_id.set_button_state("Retry", True)

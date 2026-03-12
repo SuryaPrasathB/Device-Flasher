@@ -38,7 +38,7 @@ class SlaveIDTab(QWidget):
         layout.addSpacing(20)
 
         # Slave ID Input
-        layout.addWidget(QLabel("New Slave ID"))
+        layout.addWidget(QLabel("Slave ID"))
 
         self.input_slave_id = QSpinBox()
         self.input_slave_id.setButtonSymbols(QAbstractSpinBox.UpDownArrows)

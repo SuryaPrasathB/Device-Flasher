@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
     QSpinBox, QCheckBox, QGroupBox, QFormLayout, QComboBox, QStackedWidget,
-    QMessageBox
+    QMessageBox, QDoubleSpinBox
 )
 from PySide6.QtCore import Qt, Signal, QThread, Slot, QObject
 from app.utils.helpers import get_resource_path
@@ -145,10 +145,10 @@ class TestingTab(QWidget):
         self.inp_loe_ref_const = self._create_spinbox(2147483647) # 32-bit
         f_loe.addRow("Reference Constant:", self.inp_loe_ref_const)
 
-        self.inp_loe_coa_lower = self._create_spinbox(2147483647, -2147483648) # 32-bit
+        self.inp_loe_coa_lower = self._create_double_spinbox(2147483647.0, -2147483648.0) # 32-bit
         f_loe.addRow("COA Lower Limit:", self.inp_loe_coa_lower)
 
-        self.inp_loe_coa_higher = self._create_spinbox(2147483647, -2147483648) # 32-bit
+        self.inp_loe_coa_higher = self._create_double_spinbox(2147483647.0, -2147483648.0) # 32-bit
         f_loe.addRow("COA Higher Limit:", self.inp_loe_coa_higher)
 
         self.inp_loe_pulses = self._create_spinbox(65535)
@@ -282,11 +282,18 @@ class TestingTab(QWidget):
         self._style_spinbox(sb)
         return sb
 
+    def _create_double_spinbox(self, max_val, min_val=0.0):
+        sb = QDoubleSpinBox()
+        sb.setRange(min_val, max_val)
+        sb.setDecimals(4)
+        self._style_spinbox(sb)
+        return sb
+
     def _style_spinbox(self, spinbox):
         arrow_up = get_resource_path("resources/arrow_up.svg").replace("\\", "/")
         arrow_down = get_resource_path("resources/arrow_down.svg").replace("\\", "/")
         spinbox.setStyleSheet(f"""
-            QSpinBox {{
+            QSpinBox, QDoubleSpinBox {{
                 background-color: #2d3748;
                 border: 1px solid #4a5568;
                 border-radius: 4px;
@@ -294,16 +301,16 @@ class TestingTab(QWidget):
                 color: white;
                 min-width: 100px;
             }}
-            QSpinBox::up-button, QSpinBox::down-button {{
+            QSpinBox::up-button, QSpinBox::down-button, QDoubleSpinBox::up-button, QDoubleSpinBox::down-button {{
                 width: 20px;
                 background-color: #4a5568;
             }}
-             QSpinBox::up-arrow {{
+             QSpinBox::up-arrow, QDoubleSpinBox::up-arrow {{
                 image: url({arrow_up});
                 width: 10px;
                 height: 10px;
             }}
-            QSpinBox::down-arrow {{
+            QSpinBox::down-arrow, QDoubleSpinBox::down-arrow {{
                 image: url({arrow_down});
                 width: 10px;
                 height: 10px;
@@ -570,8 +577,8 @@ class TestWorker(QObject):
         if tt == 111: # LOE
             self._write_generic(self.client.write_register, self._get_addr("dut_meter_constant_address"), d["dut_meter_constant"], "Meter Constant")
             self._write_generic(self.client.write_int32, self._get_addr("ref_meter_constant_address"), d["ref_meter_constant"], "Ref Constant")
-            self._write_generic(self.client.write_int32, self._get_addr("coa_lower_limit_address"), d["coa_lower_limit"], "COA Lower")
-            self._write_generic(self.client.write_int32, self._get_addr("coa_higher_limit_address"), d["coa_higher_limit"], "COA Higher")
+            self._write_generic(self.client.write_float32, self._get_addr("coa_lower_limit_address"), d["coa_lower_limit"], "COA Lower")
+            self._write_generic(self.client.write_float32, self._get_addr("coa_higher_limit_address"), d["coa_higher_limit"], "COA Higher")
             self._write_generic(self.client.write_register, self._get_addr("dut_meter_target_pulses_address"), d["dut_meter_target_pulses"], "Target Pulses")
             self._write_generic(self.client.write_register, self._get_addr("num_of_pulse_skip_address"), d["num_of_pulse_skip"], "Pulse Skip")
 

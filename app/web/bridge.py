@@ -15,7 +15,7 @@ class WebBridge(QObject):
     send_log = Signal(str, str) # message, level
 
     # Web Action Requests (From Web to GUI)
-    request_set_slave_id = Signal(int, int) # old_id, new_id
+    request_set_slave_id = Signal(int) # new_id
     request_start_slave_tester = Signal(int) # slave_id
     request_start_stress_tester = Signal(int, int, int, int, str) # from_id, to_id, reg, delay_ms, data_type
     request_stop_stress_tester = Signal()
