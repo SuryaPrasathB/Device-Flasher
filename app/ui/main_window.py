@@ -399,10 +399,13 @@ class MainWindow(QMainWindow):
     @Slot(int)
     def on_web_request_set_id(self, new_id):
         self.log(f"Web Request: Set ID {new_id}")
-        # The legacy worker normally sets input_slave_id = input_slave_id - 1 upon success.
-        # But wait, it already takes the UI value and decrements it.
-        # If we set it to new_id, the worker will decrement it to new_id - 1.
-        self.tab_slave_id.input_slave_id.setValue(new_id)
+        # The legacy worker sets input_slave_id = input_slave_id - 1 upon success.
+        # To ensure it ends up on `new_id` when finished, we set the input value
+        # to `new_id + 1`. But wait, `start_flash_legacy(new_id)` actually broadcasts
+        # the argument. Since we want `new_id` to be broadcasted, we pass `new_id`.
+        # However, we must set the UI spinbox to `new_id + 1` so that when the
+        # worker decrements it by 1, it settles at `new_id`.
+        self.tab_slave_id.input_slave_id.setValue(new_id + 1)
         self.start_flash_legacy(new_id)
 
     @Slot(int)

@@ -57,5 +57,6 @@
         "window_title": "LDU Tester 2.0",
         "window_width": 500,
         "window_height": 700
-    }
+    },
+    "web_pin": "1234"
 }
